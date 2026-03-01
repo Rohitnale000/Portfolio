@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rohit Nale — Backend Systems Engineer</title>
+<meta name="description" content="Backend Systems Engineer specializing in Node.js, TypeScript, and scalable API architecture. Building production-grade systems that handle real-world complexity.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — ENGINEERED DARK
+═══════════════════════════════════════════ */
+:root {
+  --navy-950: #04080f;
+  --navy-900: #070e1a;
+  --navy-800: #0c1628;
+  --navy-700: #0f1f38;
+  --navy-600: #142847;
+  --navy-500: #1b3460;
+
+  --gold:      #c9922a;
+  --gold-hi:   #e8b44a;
+  --gold-lo:   #8a6218;
+  --gold-dim:  rgba(201,146,42,0.12);
+  --gold-glow: 0 0 30px rgba(201,146,42,0.2), 0 0 80px rgba(201,146,42,0.07);
+
+  --amber:     #f0a500;
+  --amber-dim: rgba(240,165,0,0.08);
+
+  --white:     #f5f0e8;
+  --silver:    #9aaab8;
+  --dim:       #4a5a6e;
+  --border:    #142135;
+  --border-hi: #1e3352;
+
+  --green:     #4caf80;
+  --blue:      #4a9eff;
+  --red:       #e05555;
+
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-mono:    'JetBrains Mono', 'Courier New', monospace;
+  --f-body:    'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy-950);
+  color: var(--silver);
+  font-family: var(--f-body);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ───── NOISE TEXTURE ───── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ───── GRID SYSTEM ───── */
+.bg-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 119px, rgba(201,146,42,0.018) 120px);
+}
+.bg-lines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(201,146,42,0.014) 80px);
+}
+
+/* ───── SPOTLIGHT ───── */
+.spotlight {
+  position: fixed;
+  top: -20vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(201,146,42,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+nav.scrolled {
+  background: rgba(4,8,15,0.92);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.65rem;
+  border: 1px solid rgba(76,175,128,0.4);
+  background: rgba(76,175,128,0.06);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: var(--green);
+  border-radius: 2px;
+}
+.live-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(76,175,128,0.5); }
+  50%     { opacity:0.6; box-shadow: 0 0 0 4px rgba(76,175,128,0); }
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.1rem;
+  list-style: none;
+}
+.nav-links a {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--f-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  border-bottom: 1px solid transparent;
+}
+.nav-links a:hover {
+  color: var(--gold-hi);
+  border-bottom-color: var(--gold-lo);
+}
+
+/* ═══════════════════════════════════════════
+   HERO SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+#hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: clamp(3rem, 5vw, 5.4rem);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8.4rem 3rem 6rem;
+}
+
+/* Left content */
+.hero-left {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 1.2rem;
+  max-width: 640px;
+}
+
+.hero-overline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  padding: 0.32rem 0.75rem;
+  border: 1px solid var(--border-hi);
+  background: rgba(27,52,96,0.2);
+  font-family: var(--f-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+.hero-overline::before {
+  content: '//';
+  color: var(--dim);
+}
+
+.hero-h1 {
+  font-family: var(--f-display);
+  font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+.hero-h1 .gold {
+  color: var(--gold-hi);
+  font-style: italic;
+}
+
+.hero-subhead {
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: var(--silver);
+  max-width: 540px;
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+}
+.hero-subhead strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.hero-value {
+  margin-top: 0.4rem;
+  padding: 1.1rem 1.4rem;
+  background: linear-gradient(135deg, rgba(27,52,96,0.3) 0%, rgba(20,40,71,0.15) 100%);
+  border: 1px solid var(--border-hi);
+  border-left: 3px solid var(--gold-lo);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--silver);
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+}
+
+.btn-primary, .btn-secondary {
+  position: relative;
+  padding: 0.85rem 1.8rem;
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--navy-950);
+  border-color: var(--gold);
+}
+.btn-primary:hover {
+  background: var(--gold-hi);
+  box-shadow: var(--gold-glow);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--gold);
+  border-color: var(--gold-lo);
+}
+.btn-secondary:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+/* Right visualization */
+.hero-right {
+  position: relative;
+  height: 560px;
+  opacity: 0;
+  animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+}
+
+.system-diagram {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(12,22,40,0.6) 0%, rgba(7,14,26,0.8) 100%);
+  border: 1px solid var(--border-hi);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.system-diagram::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(201,146,42,0.03) 20px);
+  pointer-events: none;
+}
+
+.diagram-label {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.5rem;
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  opacity: 0;
+  animation: fadeIn 0.6s ease 1.4s forwards;
+}
+
+.node {
+  position: absolute;
+  padding: 0.8rem 1.1rem;
+  background: rgba(27,52,96,0.4);
+  border: 1px solid var(--border-hi);
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--silver);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  animation: nodeAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.node.api { top: 15%; left: 10%; animation-delay: 1.5s; }
+.node.db { top: 15%; right: 10%; animation-delay: 1.7s; }
+.node.auth { bottom: 35%; left: 15%; animation-delay: 1.9s; }
+.node.scale { bottom: 35%; right: 15%; animation-delay: 2.1s; }
+.node.deploy { bottom: 10%; left: 35%; right: 35%; animation-delay: 2.3s; text-align: center; }
+
+.node-title {
+  display: block;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+}
+
+.connection {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-lo), transparent);
+  opacity: 0;
+  animation: connectionPulse 2s ease-in-out infinite;
+}
+.connection.c1 { top: 20%; left: 25%; width: 40%; animation-delay: 2.5s; }
+.connection.c2 { top: 50%; left: 30%; width: 35%; transform: rotate(-45deg); animation-delay: 2.7s; }
+.connection.c3 { top: 50%; right: 30%; width: 35%; transform: rotate(45deg); animation-delay: 2.9s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes nodeAppear {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes connectionPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════
+   SHARED SECTION STYLES
+═══════════════════════════════════════════ */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 7rem 0;
+}
+
+.wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+.sec-label {
+  font-family: var(--f-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.sec-title {
+  font-family: var(--f-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 3.5rem;
+  letter-spacing: -0.02em;
+}
+.sec-title .italic-gold {
+  color: var(--gold-hi);
+  font-style: italic;
+}
+
+.rv {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rv.on {
+  opacity: 1;
+  transform: translateY(0);
+}
+.rv.d1.on { transition-delay: 0.1s; }
+.rv.d2.on { transition-delay: 0.2s; }
+.rv.d3.on { transition-delay: 0.3s; }
+
+/* ═══════════════════════════════════════════
+   ABOUT SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+#about {
+  background: linear-gradient(180deg, transparent 0%, rgba(7,14,26,0.4) 100%);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.about-intro {
+  position: sticky;
+  top: 100px;
+}
+
+.about-intro h3 {
+  font-family: var(--f-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+.about-intro h3 .highlight {
+  color: var(--gold-hi);
+  font-style: italic;
+}
+
+.about-intro p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--silver);
+  margin-bottom: 1rem;
+}
+
+.about-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.1rem;
+  background: var(--gold-dim);
+  border-left: 3px solid var(--gold);
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-hi);
+}
+
+.about-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.about-card {
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(12,22,40,0.4) 0%, rgba(7,14,26,0.6) 100%);
+  border: 1px solid var(--border-hi);
+  border-left: 3px solid var(--gold-lo);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.about-card:hover {
+  border-left-color: var(--gold);
+  background: linear-gradient(135deg, rgba(12,22,40,0.5) 0%, rgba(7,14,26,0.7) 100%);
+  transform: translateX(4px);
+}
+
+.about-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--f-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.about-card-title::before {
+  content: '▸';
+  font-size: 1rem;
+}
+
+.about-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--silver);
+}
+.about-card p strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════
+   CAPABILITIES SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+#capabilities {
+  background: rgba(4,8,15,0.5);
+}
+
+.cap-intro {
+  max-width: 700px;
+  margin-bottom: 4rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--silver);
+}
+.cap-intro strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+}
+
+.cap-card {
+  position: relative;
+  padding: 2.2rem;
+  background: linear-gradient(135deg, rgba(12,22,40,0.5) 0%, rgba(7,14,26,0.7) 100%);
+  border: 1px solid var(--border-hi);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.cap-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-lo), var(--gold), var(--gold-lo));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cap-card:hover::before {
+  transform: scaleX(1);
+}
+.cap-card:hover {
+  border-color: var(--gold-lo);
+  background: linear-gradient(135deg, rgba(12,22,40,0.6) 0%, rgba(7,14,26,0.8) 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.cap-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+  font-family: var(--f-mono);
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 1.4rem;
+  transition: all 0.3s;
+}
+.cap-card:hover .cap-icon {
+  background: var(--gold);
+  color: var(--navy-950);
+  transform: scale(1.1);
+}
+
+.cap-title {
+  font-family: var(--f-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 0.8rem;
+}
+
+.cap-desc {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--silver);
+  margin-bottom: 1.4rem;
+}
+
+.cap-techs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tech-tag {
+  padding: 0.35rem 0.75rem;
+  background: rgba(27,52,96,0.4);
+  border: 1px solid var(--border-hi);
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  transition: all 0.2s;
+}
+.cap-card:hover .tech-tag {
+  color: var(--silver);
+  border-color: var(--border-hi);
+}
+
+/* ═══════════════════════════════════════════
+   PROJECTS SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+#projects {
+  background: linear-gradient(180deg, rgba(7,14,26,0.4) 0%, transparent 100%);
+}
+
+.proj-intro {
+  max-width: 700px;
+  margin-bottom: 4rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--silver);
+}
+
+.deploy-grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.deploy-node {
+  position: relative;
+  background: linear-gradient(135deg, rgba(12,22,40,0.4) 0%, rgba(7,14,26,0.6) 100%);
+  border: 1px solid var(--border-hi);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.deploy-node:hover {
+  border-color: var(--gold-lo);
+}
+.deploy-node.open {
+  background: linear-gradient(135deg, rgba(12,22,40,0.6) 0%, rgba(7,14,26,0.8) 100%);
+}
+
+.deploy-head {
+  padding: 2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 2rem;
+  cursor: pointer;
+}
+
+.deploy-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.deploy-id {
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  padding: 0.25rem 0.6rem;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+}
+
+.deploy-stack {
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+}
+
+.deploy-title {
+  font-family: var(--f-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 0.8rem;
+}
+
+.deploy-summary {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--silver);
+  max-width: 680px;
+}
+
+.deploy-status {
+  flex-shrink: 0;
+  padding: 0.45rem 1rem;
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.deploy-status.live {
+  color: var(--green);
+  background: rgba(76,175,128,0.06);
+  border-color: rgba(76,175,128,0.3);
+}
+.deploy-status.internal {
+  color: var(--blue);
+  background: rgba(74,158,255,0.06);
+  border-color: rgba(74,158,255,0.3);
+}
+.ds-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.deploy-toggle {
+  margin: 0 2.5rem 2rem;
+  padding: 0.7rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  color: var(--gold);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.deploy-toggle:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold-lo);
+}
+
+.deploy-blueprint {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.deploy-node.open .deploy-blueprint {
+  max-height: 1000px;
+}
+
+.deploy-blueprint-inner {
+  padding: 0 2.5rem 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.bp-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
+  padding: 1.8rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.bp-row:first-child {
+  padding-top: 2.5rem;
+}
+.bp-row:last-child {
+  border-bottom: none;
+}
+
+.bp-key {
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.bp-val {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--silver);
+}
+.bp-val strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.bp-cap-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bp-cap {
+  padding: 0.4rem 0.85rem;
+  background: rgba(27,52,96,0.3);
+  border: 1px solid var(--border-hi);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--silver);
+}
+.bp-cap.core {
+  background: var(--gold-dim);
+  border-color: var(--gold-lo);
+  color: var(--gold);
+}
+
+.deploy-linkline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+}
+.deploy-linkline .note {
+  color: var(--dim);
+  letter-spacing: 0.08em;
+}
+.deploy-linkline a {
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.deploy-linkline a:hover {
+  color: var(--gold-hi);
+}
+
+/* ═══════════════════════════════════════════
+   EXPERIENCE SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+#experience {
+  background: rgba(4,8,15,0.5);
+}
+
+.exp-timeline {
+  display: grid;
+  gap: 3rem;
+}
+
+.exp-block {
+  position: relative;
+  padding: 2.5rem 3rem;
+  background: linear-gradient(135deg, rgba(12,22,40,0.5) 0%, rgba(7,14,26,0.7) 100%);
+  border: 1px solid var(--border-hi);
+  border-left: 4px solid var(--gold-lo);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.exp-block:hover {
+  border-left-color: var(--gold);
+  transform: translateX(6px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.exp-company {
+  font-family: var(--f-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.exp-role {
+  font-family: var(--f-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.exp-duration {
+  text-align: right;
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+}
+.exp-duration .period {
+  color: var(--silver);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.exp-duration .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(76,175,128,0.06);
+  border: 1px solid rgba(76,175,128,0.3);
+  color: var(--green);
+  letter-spacing: 0.1em;
+}
+
+.exp-content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.exp-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 2rem;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.exp-row:last-child {
+  border-bottom: none;
+}
+
+.exp-key {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.exp-val {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--silver);
+}
+.exp-val strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.exp-tag {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.5rem;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+}
+
+/* ═══════════════════════════════════════════
+   CONTACT SECTION — REDESIGNED
+═══════════════════════════════════════════ */
+.contact-section {
+  position: relative;
+  z-index: 1;
+  padding: 8rem 0 4rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(7,14,26,0.6) 100%);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.contact-hl {
+  font-family: var(--f-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.contact-hl .italic-gold {
+  color: var(--gold-hi);
+  font-style: italic;
+}
+
+.contact-copy {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--silver);
+  margin-bottom: 2.5rem;
+  max-width: 560px;
+}
+
+.api-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 1.2rem;
+  background: rgba(27,52,96,0.4);
+  border: 1px solid var(--border-hi);
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+}
+.api-pill .method {
+  color: var(--green);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.api-pill .route {
+  color: var(--gold);
+}
+.api-pill .http {
+  color: var(--dim);
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--gold);
+  color: var(--navy-950);
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--gold);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-gold:hover {
+  background: var(--gold-hi);
+  box-shadow: var(--gold-glow);
+  transform: translateY(-2px);
+}
+
+.contact-links {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.clink {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.3rem 1.8rem;
+  background: linear-gradient(135deg, rgba(12,22,40,0.4) 0%, rgba(7,14,26,0.6) 100%);
+  border: 1px solid var(--border-hi);
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.clink:hover {
+  background: linear-gradient(135deg, rgba(12,22,40,0.6) 0%, rgba(7,14,26,0.8) 100%);
+  border-color: var(--gold-lo);
+  transform: translateX(4px);
+}
+
+.clink-type {
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.clink-val {
+  font-family: var(--f-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--silver);
+}
+
+.clink-arr {
+  font-size: 1.2rem;
+  color: var(--dim);
+  transition: transform 0.3s;
+}
+.clink:hover .clink-arr {
+  transform: translateX(4px);
+  color: var(--gold);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3rem;
+  border-top: 1px solid var(--border);
+  background: rgba(4,8,15,0.8);
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.foot-r {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--green);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 968px) {
+  nav { padding: 0 2rem; }
+  .wrap { padding: 0 2rem; }
+  
+  #hero {
+    grid-template-columns: 1fr;
+    padding: 7rem 2rem 4rem;
+    gap: 3rem;
+  }
+  .hero-right { height: 400px; }
+  
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .about-intro { position: static; }
+  
+  .cap-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .bp-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .exp-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+  
+  footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="bg-lines"></div>
+<div class="spotlight"></div>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">
+    ROHIT NALE
+    <span class="live-badge">
+      <span class="live-dot"></span>
+      AVAILABLE
+    </span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#capabilities">Capabilities</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-overline">Backend Engineer</div>
+    
+    <h1 class="hero-h1">
+      I engineer backend systems<br>
+      that <span class="gold">actually work</span><br>
+      under pressure.
+    </h1>
+    
+    <p class="hero-subhead">
+      Node.js specialist focused on <strong>API architecture, database optimization, and production reliability</strong>. I don't just write code—I design systems that scale, handle edge cases, and ship on time.
+    </p>
+    
+    <div class="hero-value">
+      3+ years building real-world backend infrastructure: from GraphQL APIs serving mobile apps, to AI platform integrations, to reverse-engineered automation workflows that eliminate manual bottlenecks.
+    </div>
+    
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View Systems</a>
+      <a href="#contact" class="btn-secondary">Hire Me</a>
+    </div>
+  </div>
+  
+  <div class="hero-right">
+    <div class="system-diagram">
+      <span class="diagram-label">System Architecture</span>
+      
+      <div class="node api">
+        <span class="node-title">API Layer</span>
+        REST · GraphQL
+      </div>
+      
+      <div class="node db">
+        <span class="node-title">Data Layer</span>
+        PostgreSQL · Prisma
+      </div>
+      
+      <div class="node auth">
+        <span class="node-title">Auth System</span>
+        JWT · OAuth2
+      </div>
+      
+      <div class="node scale">
+        <span class="node-title">Performance</span>
+        Query Optimization
+      </div>
+      
+      <div class="node deploy">
+        <span class="node-title">Deployment</span>
+        Docker · AWS · Fly.io
+      </div>
+      
+      <div class="connection c1"></div>
+      <div class="connection c2"></div>
+      <div class="connection c3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" class="section">
+<div class="wrap">
+  <div class="sec-label">01 — About</div>
+  <h2 class="sec-title rv">Who builds the <span class="italic-gold">backend</span></h2>
+  
+  <div class="about-grid">
+    <div class="about-intro rv">
+      <h3>
+        I'm a backend engineer who treats <span class="highlight">system design</span> like problem-solving, not template-filling.
+      </h3>
+      <p>
+        Based in Pune, India. MCA from Sinhgad Institute. Currently building production systems at Prolance IT, where I've shipped everything from dating app APIs to AI infrastructure platforms.
+      </p>
+      <p>
+        I don't chase framework trends. I focus on fundamentals: clean data models, secure authentication, predictable performance, and code that other engineers can actually maintain.
+      </p>
+      <div class="about-stat">
+        <span>⚡</span>
+        3.5+ years production experience · 15-day notice
+      </div>
+    </div>
+    
+    <div class="about-content">
+      <div class="about-card rv d1">
+        <div class="about-card-title">How I Started</div>
+        <p>
+          Started with full-stack projects during my MCA, but quickly realized my strength was in <strong>backend logic, database design, and API architecture</strong>. Joined iNDX Technology fresh out of college, where I learned to build RESTful APIs with Node.js and PostgreSQL that actually handled production load.
+        </p>
+      </div>
+      
+      <div class="about-card rv d2">
+        <div class="about-card-title">What I Build</div>
+        <p>
+          I specialize in <strong>backend systems that solve real business problems</strong>: location-based matching algorithms using geospatial calculations, secure GraphQL APIs with proper authorization layers, HRMS modules handling complex payroll logic, and automation workflows that eliminate repetitive manual tasks.
+        </p>
+      </div>
+      
+      <div class="about-card rv d3">
+        <div class="about-card-title">My Engineering Approach</div>
+        <p>
+          I prioritize <strong>security, scalability, and maintainability</strong> over clever code tricks. Every system I build includes proper error handling, transaction management, and database indexing. I write APIs that won't break when requirements change, and schemas that support future features without migrations.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ CAPABILITIES ═══ -->
+<section id="capabilities" class="section">
+<div class="wrap">
+  <div class="sec-label">02 — Capabilities</div>
+  <h2 class="sec-title rv">Backend engineering <span class="italic-gold">expertise</span></h2>
+  
+  <p class="cap-intro rv">
+    These aren't just technologies I've used—they're systems I've <strong>deployed to production, debugged under load, and optimized for real users</strong>. Each capability represents problems I've solved and code I've shipped.
+  </p>
+  
+  <div class="cap-grid">
+    <div class="cap-card rv">
+      <div class="cap-icon">⚡</div>
+      <h3 class="cap-title">API Architecture</h3>
+      <p class="cap-desc">
+        Design and implement RESTful and GraphQL APIs with proper authentication, rate limiting, and error handling. Built production APIs serving mobile apps and web platforms.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">Express.js</span>
+        <span class="tech-tag">GraphQL</span>
+        <span class="tech-tag">REST</span>
+        <span class="tech-tag">TypeScript</span>
+      </div>
+    </div>
+    
+    <div class="cap-card rv d1">
+      <div class="cap-icon">🗄️</div>
+      <h3 class="cap-title">Database Engineering</h3>
+      <p class="cap-desc">
+        Design normalized schemas, write optimized queries, manage migrations, and implement proper indexing strategies. Experience with both SQL and NoSQL at scale.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">PostgreSQL</span>
+        <span class="tech-tag">MongoDB</span>
+        <span class="tech-tag">Prisma</span>
+        <span class="tech-tag">Sequelize</span>
+        <span class="tech-tag">Query Optimization</span>
+      </div>
+    </div>
+    
+    <div class="cap-card rv d2">
+      <div class="cap-icon">🔐</div>
+      <h3 class="cap-title">Authentication & Security</h3>
+      <p class="cap-desc">
+        Implement secure authentication systems with JWT, OAuth2, and session management. Experience with role-based access control and API security best practices.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">JWT</span>
+        <span class="tech-tag">OAuth2</span>
+        <span class="tech-tag">Passport.js</span>
+        <span class="tech-tag">RBAC</span>
+        <span class="tech-tag">API Security</span>
+      </div>
+    </div>
+    
+    <div class="cap-card rv">
+      <div class="cap-icon">🚀</div>
+      <h3 class="cap-title">Deployment & DevOps</h3>
+      <p class="cap-desc">
+        Deploy and manage backend services using Docker containers, AWS infrastructure, and process managers. Handle CI/CD pipelines and production monitoring.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">Docker</span>
+        <span class="tech-tag">AWS EC2</span>
+        <span class="tech-tag">AWS S3</span>
+        <span class="tech-tag">PM2</span>
+        <span class="tech-tag">Fly.io</span>
+      </div>
+    </div>
+    
+    <div class="cap-card rv d1">
+      <div class="cap-icon">⚙️</div>
+      <h3 class="cap-title">Performance Optimization</h3>
+      <p class="cap-desc">
+        Identify bottlenecks, optimize database queries, implement caching strategies, and tune API response times. Focus on scalability and efficiency under load.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">Query Tuning</span>
+        <span class="tech-tag">Indexing</span>
+        <span class="tech-tag">Caching</span>
+        <span class="tech-tag">Load Testing</span>
+        <span class="tech-tag">Profiling</span>
+      </div>
+    </div>
+    
+    <div class="cap-card rv d2">
+      <div class="cap-icon">🔧</div>
+      <h3 class="cap-title">System Integration</h3>
+      <p class="cap-desc">
+        Integrate third-party APIs, build automation workflows, and reverse-engineer existing systems. Experience with AI SDKs, payment gateways, and external services.
+      </p>
+      <div class="cap-techs">
+        <span class="tech-tag">API Integration</span>
+        <span class="tech-tag">Anthropic AI</span>
+        <span class="tech-tag">Automation</span>
+        <span class="tech-tag">Reverse Engineering</span>
+        <span class="tech-tag">Webhooks</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects" class="section">
+<div class="wrap">
+  <div class="sec-label">03 — Projects</div>
+  <h2 class="sec-title rv">Production <span class="italic-gold">systems</span></h2>
+  
+  <p class="proj-intro rv">
+    Real projects I've architected, built, and deployed. These aren't tutorials or side projects—they're production systems handling real users, real data, and real business logic.
+  </p>
+  
+  <div class="deploy-grid">
+    <!-- PROJECT 1: CORDIA -->
+    <article class="deploy-node rv">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-001</span>
+            <span class="deploy-stack">Node.js · TypeScript · GraphQL · Prisma · PostgreSQL</span>
+          </div>
+          <h3 class="deploy-title">Cordia — Dating App Backend Infrastructure</h3>
+          <p class="deploy-summary">
+            Secure GraphQL API powering a location-based dating platform with advanced matching algorithms, real-time discovery, and comprehensive user onboarding flows.
+          </p>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · 2024</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false">Open Blueprint</button>
+      <div class="deploy-blueprint">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">
+              Dating apps require complex backend logic: geospatial matching, real-time user discovery, secure profile management, and performant filtering across thousands of users. System needed to handle concurrent API requests while maintaining data privacy and security.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Architecture</div>
+            <div class="bp-val">
+              Built a <strong>GraphQL API layer</strong> with Node.js and TypeScript for type-safe resolvers. Implemented <strong>Prisma ORM</strong> for database management with PostgreSQL, ensuring transactional integrity across user actions. Designed normalized schema supporting complex relationships between users, matches, preferences, and interactions.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Matching Algorithm</div>
+            <div class="bp-val">
+              Engineered <strong>geospatial matching using Haversine formula</strong> to calculate precise distances between users. Implemented multi-criteria filtering (age, interests, location radius) with optimized database queries. Built discovery feed with paginated results and real-time availability updates.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Security & Auth</div>
+            <div class="bp-val">
+              Implemented <strong>JWT-based authentication</strong> with secure token refresh mechanisms. Built role-based access control for different user types. Added input validation, rate limiting, and SQL injection protection across all resolvers.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Performance</div>
+            <div class="bp-val">
+              Optimized PostgreSQL queries with proper indexing on location and filter columns. Implemented <strong>database query batching</strong> to prevent N+1 problems in GraphQL. Reduced API response times from 800ms to under 150ms for discovery endpoints.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Features Shipped</div>
+            <div class="bp-val">
+              User onboarding with photo upload, profile validation, and preference setup. Discovery feed with location-based filtering and swipe mechanics. Match management system with chat initialization. User blocking, reporting, and safety features. Account settings and profile editing with real-time updates.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Stack</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span>
+                <span class="bp-cap core">TypeScript</span>
+                <span class="bp-cap core">GraphQL</span>
+                <span class="bp-cap core">Prisma</span>
+                <span class="bp-cap core">PostgreSQL</span>
+                <span class="bp-cap">JWT Auth</span>
+                <span class="bp-cap">Haversine Formula</span>
+                <span class="bp-cap">Express.js</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Prolance IT · Production Deployment</span>
+            <a href="https://github.com/Rohitnale000" target="_blank">GitHub Profile ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 2: PANDA STACK AI -->
+    <article class="deploy-node rv d1">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-002</span>
+            <span class="deploy-stack">Node.js · TypeScript · Fly.io · Docker · Anthropic AI</span>
+          </div>
+          <h3 class="deploy-title">Panda Stack AI — Developer Infrastructure Platform</h3>
+          <p class="deploy-summary">
+            Backend APIs for microVM lifecycle management, automated development environment provisioning, and AI-powered developer tooling integration.
+          </p>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · 2024</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false">Open Blueprint</button>
+      <div class="deploy-blueprint">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">
+              Developers need instant, isolated development environments. Manual VM setup is time-consuming and error-prone. Platform required automated provisioning, lifecycle management, and AI integration for enhanced developer productivity.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">System Design</div>
+            <div class="bp-val">
+              Built <strong>Node.js APIs</strong> to orchestrate <strong>Fly.io microVM provisioning</strong>. Implemented state machine for VM lifecycle (create → configure → active → suspend → destroy). Designed event-driven architecture for handling async VM operations and status updates.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Automation</div>
+            <div class="bp-val">
+              Created <strong>Docker-based environment setup automation</strong> using shell scripting. Built templating system for different tech stacks (Node, Python, Go). Implemented health check mechanisms and automatic rollback on failed provisioning.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">AI Integration</div>
+            <div class="bp-val">
+              Integrated <strong>Anthropic AI SDK</strong> for intelligent environment configuration. Built API endpoints for AI-assisted code generation, debugging suggestions, and automated documentation. Handled prompt engineering and response parsing for developer-focused outputs.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Internal Tools</div>
+            <div class="bp-val">
+              Developed ticketing system backend for platform support. Built admin dashboard APIs for VM monitoring, resource allocation tracking, and user management. Implemented logging and monitoring infrastructure for debugging production issues.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Stack</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span>
+                <span class="bp-cap core">TypeScript</span>
+                <span class="bp-cap core">Fly.io API</span>
+                <span class="bp-cap core">Docker</span>
+                <span class="bp-cap core">Anthropic AI</span>
+                <span class="bp-cap">Shell Scripting</span>
+                <span class="bp-cap">Event-Driven</span>
+                <span class="bp-cap">Express.js</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Prolance IT · AI Infrastructure Platform</span>
+            <a href="https://github.com/Rohitnale000" target="_blank">GitHub Profile ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 3: PROWORK HRMS -->
+    <article class="deploy-node rv d2">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-003</span>
+            <span class="deploy-stack">Node.js · Express.js · PostgreSQL · Prisma</span>
+          </div>
+          <h3 class="deploy-title">proWork HRMS — Enterprise HR Management System</h3>
+          <p class="deploy-summary">
+            Backend modules for job management, automated salary calculation, document handling, and employee lifecycle management for enterprise HR operations.
+          </p>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · 2024</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false">Open Blueprint</button>
+      <div class="deploy-blueprint">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">
+              HR teams need centralized systems for managing jobs, employees, salaries, and documents. Manual processes lead to errors in payroll calculations and compliance issues. System required complex business logic for different employment types and pay structures.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Job Management</div>
+            <div class="bp-val">
+              Built <strong>RESTful APIs</strong> for job posting, candidate tracking, and hiring workflows. Implemented approval chains with email notifications. Designed database schema supporting multiple job types, departments, and hiring stages with proper state transitions.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Salary Engine</div>
+            <div class="bp-val">
+              Engineered <strong>automated salary calculation system</strong> handling base pay, allowances, deductions, taxes, and overtime. Built flexible rule engine supporting different pay structures (hourly, monthly, project-based). Implemented audit trail for all salary-related transactions.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Document Management</div>
+            <div class="bp-val">
+              Developed secure document upload, storage, and retrieval system. Implemented <strong>AWS S3 integration</strong> for file storage with presigned URLs for temporary access. Built document versioning and access control based on employee roles.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Data Integrity</div>
+            <div class="bp-val">
+              Used <strong>Prisma ORM transactions</strong> to ensure data consistency across related tables. Implemented validation rules for employee data, salary calculations, and document uploads. Added database constraints and indexes for performance and data integrity.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Stack</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span>
+                <span class="bp-cap core">Express.js</span>
+                <span class="bp-cap core">PostgreSQL</span>
+                <span class="bp-cap core">Prisma</span>
+                <span class="bp-cap">AWS S3</span>
+                <span class="bp-cap">Business Logic</span>
+                <span class="bp-cap">Transactions</span>
+                <span class="bp-cap">Audit Trail</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Prolance IT · Enterprise HRMS</span>
+            <a href="https://github.com/Rohitnale000" target="_blank">GitHub Profile ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 4: WALMART AUTOMATION -->
+    <article class="deploy-node rv d3">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-004</span>
+            <span class="deploy-stack">Node.js · JavaScript · Burp Suite · Reverse Engineering</span>
+          </div>
+          <h3 class="deploy-title">Walmart Account Automation — Reverse Engineering Project</h3>
+          <p class="deploy-summary">
+            Automated credit card addition workflow through API reverse engineering, eliminating manual account setup processes using traffic analysis and HTTP automation.
+          </p>
+        </div>
+        <div class="deploy-status internal"><span class="ds-dot"></span>INTERNAL · 2023</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false">Open Blueprint</button>
+      <div class="deploy-blueprint">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">
+              Manual credit card addition for Walmart merchant accounts was repetitive and time-intensive during bulk account setup processes. Required understanding private API flows without documentation.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Reverse Engineering</div>
+            <div class="bp-val">
+              Used <strong>Burp Suite for HTTP traffic analysis</strong> to capture and analyze Walmart's internal API calls. Identified authentication flows, request sequencing, required headers, and payload structures. Mapped the complete card addition workflow from login to confirmation.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Authentication</div>
+            <div class="bp-val">
+              Implemented <strong>cookie-based session authentication</strong> by replicating observed browser behavior. Built cookie jar management for maintaining persistent sessions across multiple API calls. Handled CSRF tokens and request signing requirements.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Automation Script</div>
+            <div class="bp-val">
+              Built <strong>Node.js automation script</strong> orchestrating required HTTP requests in proper sequence. Implemented error handling for failed requests, rate limiting to avoid detection, and retry logic for transient failures. Created reusable workflow for different merchant accounts.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Outcome</div>
+            <div class="bp-val">
+              Delivered fully automated card-addition workflow reducing manual setup time from 10+ minutes to under 30 seconds per account. Enabled bulk processing for merchant onboarding. Zero manual intervention required after initial setup.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Stack</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span>
+                <span class="bp-cap core">JavaScript</span>
+                <span class="bp-cap core">Burp Suite</span>
+                <span class="bp-cap core">HTTP Automation</span>
+                <span class="bp-cap">Cookie Auth</span>
+                <span class="bp-cap">Traffic Analysis</span>
+                <span class="bp-cap">Reverse Engineering</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Internal Engineering Project · Automation</span>
+            <a href="https://github.com/Rohitnale000" target="_blank">GitHub Profile ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 5: LMS -->
+    <article class="deploy-node rv">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-005</span>
+            <span class="deploy-stack">Node.js · Express.js · PostgreSQL · Sequelize</span>
+          </div>
+          <h3 class="deploy-title">Leave Management System — Employee Portal</h3>
+          <p class="deploy-summary">
+            Full-stack leave management application with real-time status updates, automated balance calculations, and approval workflows for enterprise employee management.
+          </p>
+        </div>
+        <div class="deploy-status internal"><span class="ds-dot"></span>COMPLETED · 2022</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false">Open Blueprint</button>
+      <div class="deploy-blueprint">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">
+              Organizations needed centralized system for employees to request leaves and managers to approve them. Required automatic leave balance tracking, approval chains, and real-time status updates without manual spreadsheet management.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Backend Architecture</div>
+            <div class="bp-val">
+              Built <strong>RESTful API with Node.js and Express.js</strong>. Designed PostgreSQL database schema with <strong>Sequelize ORM</strong> handling employees, leave types, leave requests, and approval workflows. Implemented proper foreign key relationships and cascading deletes.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Leave Logic</div>
+            <div class="bp-val">
+              Engineered <strong>automatic leave balance calculation</strong> based on employee join date, leave type quotas, and carry-forward rules. Built validation preventing negative balances and overlapping leave requests. Implemented real-time status updates using database triggers.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Approval System</div>
+            <div class="bp-val">
+              Implemented multi-level approval workflow with manager assignment and escalation rules. Built notification system for pending approvals and status changes. Added approval history tracking with timestamps and comments.
+            </div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Stack</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span>
+                <span class="bp-cap core">Express.js</span>
+                <span class="bp-cap core">PostgreSQL</span>
+                <span class="bp-cap core">Sequelize</span>
+                <span class="bp-cap">Svelte</span>
+                <span class="bp-cap">Bootstrap</span>
+                <span class="bp-cap">Business Logic</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">iNDX Technology · Enterprise Application</span>
+            <a href="https://github.com/Rohitnale000" target="_blank">GitHub Profile ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience" class="section">
+<div class="wrap">
+  <div class="sec-label">04 — Experience</div>
+  <h2 class="sec-title rv">Production <span class="italic-gold">history</span></h2>
+  
+  <div class="exp-timeline">
+    <!-- CURRENT ROLE -->
+    <div class="exp-block rv">
+      <div class="exp-header">
+        <div>
+          <h3 class="exp-company">Prolance IT</h3>
+          <div class="exp-role">Software Developer · Backend Focus</div>
+        </div>
+        <div class="exp-duration">
+          <span class="period">Sep 2023 — Present</span>
+          <span class="status">
+            <span class="live-dot"></span>
+            CURRENT · 2.5 YEARS
+          </span>
+        </div>
+      </div>
+      
+      <div class="exp-content">
+        <div class="exp-row">
+          <div class="exp-key">Location</div>
+          <div class="exp-val">Surat, Gujarat · Full-time · 15-day notice</div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Domain</div>
+          <div class="exp-val">
+            Backend-focused engineering across <strong>AI platforms, HRMS systems, SaaS products</strong>, and location-based mobile applications. Building production-grade APIs and database systems.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Systems Built</div>
+          <div class="exp-val">
+            <span class="exp-tag">Cordia GraphQL API</span>
+            <span class="exp-tag">Panda Stack AI</span>
+            <span class="exp-tag">proWork HRMS</span>
+            <span class="exp-tag">Walmart Automation</span>
+            — architected and deployed production backend systems serving real users and handling complex business logic.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Scaled</div>
+          <div class="exp-val">
+            Optimized <strong>PostgreSQL and MongoDB query performance</strong> for high-concurrency API endpoints. Managed database schema migrations without downtime. Reduced API response times through query optimization and proper indexing strategies.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Secured</div>
+          <div class="exp-val">
+            Implemented <strong>JWT-based authentication, role-based access control (RBAC)</strong>, and OAuth2 flows across multiple production systems. Designed secure API architectures preventing unauthorized access and data leaks.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">AI Integration</div>
+          <div class="exp-val">
+            Integrated <strong>Anthropic AI SDK</strong> into live developer infrastructure platform. Built APIs handling AI prompt engineering, response parsing, and intelligent automation for Panda Stack AI's environment provisioning system.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Deployed</div>
+          <div class="exp-val">
+            <strong>Docker containers on AWS EC2</strong>, file storage via <strong>AWS S3 with presigned URLs</strong>, process management using <strong>PM2</strong>, and orchestrated <strong>Fly.io microVM workloads</strong> for scalable infrastructure.
+          </div>
+        </div>
+        
+        <div class="exp-row" style="border-bottom:none;">
+          <div class="exp-key">Tech Stack</div>
+          <div class="exp-val">
+            Node.js · TypeScript · Express.js · GraphQL · Prisma · PostgreSQL · MongoDB · Docker · AWS (EC2, S3) · Fly.io · Anthropic AI
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIOUS ROLE -->
+    <div class="exp-block rv d1">
+      <div class="exp-header">
+        <div>
+          <h3 class="exp-company">iNDX Technology</h3>
+          <div class="exp-role">Full Stack Developer · Backend Learning</div>
+        </div>
+        <div class="exp-duration">
+          <span class="period">Oct 2022 — Aug 2023</span>
+          <span class="status" style="background: rgba(74,158,255,0.06); border-color: rgba(74,158,255,0.3); color: var(--blue);">
+            <span class="live-dot" style="background: var(--blue);"></span>
+            COMPLETED · 11 MONTHS
+          </span>
+        </div>
+      </div>
+      
+      <div class="exp-content">
+        <div class="exp-row">
+          <div class="exp-key">Location</div>
+          <div class="exp-val">Mumbai, Maharashtra · Full-time · First job</div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Learning Path</div>
+          <div class="exp-val">
+            Started as full-stack developer fresh out of college. Learned production <strong>Node.js backend development</strong> by building RESTful APIs, working with PostgreSQL databases, and implementing authentication systems.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Backend Work</div>
+          <div class="exp-val">
+            Developed <strong>RESTful APIs using Node.js and PostgreSQL</strong> for internal tools and client projects. Gained hands-on experience with database design, query optimization, and secure data handling patterns.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Database Skills</div>
+          <div class="exp-val">
+            Worked with <strong>PostgreSQL and SQLite</strong> databases. Used <strong>Sequelize ORM</strong> for database operations, learned migration management, and understood proper schema design for scalable applications.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Auth & Security</div>
+          <div class="exp-val">
+            Implemented secure authentication mechanisms using <strong>JWT and Passport.js</strong>. Learned API security best practices, input validation, and proper session management for user access control.
+          </div>
+        </div>
+        
+        <div class="exp-row">
+          <div class="exp-key">Projects</div>
+          <div class="exp-val">
+            Developed CRUD applications for internal systems. Contributed to <strong>LMS portal backend</strong> focusing on database design, API endpoints, and secure data management for leave tracking and approval workflows.
+          </div>
+        </div>
+        
+        <div class="exp-row" style="border-bottom:none;">
+          <div class="exp-key">Tech Stack</div>
+          <div class="exp-val">
+            Node.js · Express.js · PostgreSQL · SQLite · Sequelize · JWT · Passport.js · REST APIs
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<div id="contact" class="contact-section">
+<div class="wrap">
+  <div class="contact-grid">
+    <div class="rv">
+      <div class="sec-label">05 — Contact</div>
+      <h2 class="contact-hl">
+        Let's build<br>
+        something<br>
+        <span class="italic-gold">that works.</span>
+      </h2>
+      <p class="contact-copy">
+        Open to Backend and Full-Stack roles in Pune, Mumbai, Bangalore, or Remote. If your system needs reliable Node.js architecture, clean database design, and APIs that don't break in production—let's talk.
+      </p>
+
+      <div class="api-pill">
+        <span class="method">POST</span>
+        <span class="route">/api/v1/hire/rohit-nale</span>
+        <span class="http">HTTP/1.1</span>
+      </div>
+
+      <a href="mailto:rohitnale0000@gmail.com" class="btn-gold">Send Offer →</a>
+    </div>
+
+    <div class="contact-links rv d2">
+      <a href="mailto:rohitnale0000@gmail.com" class="clink">
+        <span class="clink-type">Email</span>
+        <span class="clink-val">rohitnale0000@gmail.com</span>
+        <span class="clink-arr">→</span>
+      </a>
+      <a href="tel:+919623933599" class="clink">
+        <span class="clink-type">Phone</span>
+        <span class="clink-val">+91 96239 33599</span>
+        <span class="clink-arr">→</span>
+      </a>
+      <a href="https://linkedin.com/in/rohit-nale-820762149" target="_blank" class="clink">
+        <span class="clink-type">LinkedIn</span>
+        <span class="clink-val">rohit-nale-820762149</span>
+        <span class="clink-arr">↗</span>
+      </a>
+      <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank" class="clink">
+        <span class="clink-type">GitHub</span>
+        <span class="clink-val">Rohitnale000/Rohitnale000</span>
+        <span class="clink-arr">↗</span>
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="foot-l">ROHIT NALE · BACKEND SYSTEMS ENGINEER · PUNE, IN · MCA SINHGAD '22</div>
+  <div class="foot-r">
+    <div class="live-dot"></div>
+    AVAILABLE · 15-DAY NOTICE
+  </div>
+</footer>
+
+<script>
+// ═══ NAVIGATION SCROLL ═══
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// ═══ SCROLL REVEAL ═══
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('on');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// ═══ PROJECT BLUEPRINT TOGGLE ═══
+const deployNodes = document.querySelectorAll('.deploy-node');
+deployNodes.forEach(node => {
+  const toggle = node.querySelector('.deploy-toggle');
+  if (!toggle) return;
+  
+  toggle.addEventListener('click', () => {
+    const shouldOpen = !node.classList.contains('open');
+    
+    // Close other nodes
+    deployNodes.forEach(other => {
+      if (other === node) return;
+      other.classList.remove('open');
+      const otherToggle = other.querySelector('.deploy-toggle');
+      if (otherToggle) {
+        otherToggle.setAttribute('aria-expanded', 'false');
+        otherToggle.textContent = 'Open Blueprint';
+      }
+    });
+    
+    // Toggle current node
+    node.classList.toggle('open', shouldOpen);
+    toggle.setAttribute('aria-expanded', String(shouldOpen));
+    toggle.textContent = shouldOpen ? 'Collapse Blueprint' : 'Open Blueprint';
+  });
+});
+
+// ═══ SMOOTH SCROLL ═══
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const targetId = this.getAttribute('href');
+    const targetElement = document.querySelector(targetId);
+    
+    if (targetElement) {
+      e.preventDefault();
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rohit Nale — Backend Systems Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --border: #1e2d3d;
+    --accent: #00d4aa;
+    --accent2: #0097ff;
+    --warn: #ff6b35;
+    --text: #c9d1d9;
+    --text-muted: #6e7681;
+    --text-bright: #f0f6fc;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+    backdrop-filter: blur(0px);
+  }
+  nav.scrolled {
+    border-bottom-color: var(--border);
+    backdrop-filter: blur(16px);
+    background: rgba(8, 10, 15, 0.8);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* STATUS INDICATOR */
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 0.5rem;
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,212,170,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0,212,170,0); }
+  }
+
+  /* ═══════════════════════════════════
+     HERO — SYSTEM BOOT SEQUENCE
+  ═══════════════════════════════════ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 2rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .boot-sequence {
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.5s 0.3s ease forwards;
+  }
+
+  .boot-line {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typeReveal 0s forwards;
+  }
+
+  .boot-line.ok::after {
+    content: ' [ OK ]';
+    color: var(--accent);
+  }
+  .boot-line.info::after {
+    content: ' [ INFO ]';
+    color: var(--accent2);
+  }
+  .boot-line.warn::after {
+    content: ' [ WARN ]';
+    color: var(--warn);
+  }
+
+  /* staggered delay per line */
+  .boot-line:nth-child(1) { animation-delay: 0.5s; }
+  .boot-line:nth-child(2) { animation-delay: 0.8s; }
+  .boot-line:nth-child(3) { animation-delay: 1.1s; }
+  .boot-line:nth-child(4) { animation-delay: 1.4s; }
+  .boot-line:nth-child(5) { animation-delay: 1.7s; }
+
+  @keyframes typeReveal {
+    from { max-width: 0; opacity: 0; }
+    to { max-width: 100%; opacity: 1; }
+  }
+
+  /* Override - use CSS only animation */
+  .boot-line {
+    animation: bootLine 0.4s ease forwards;
+    opacity: 0;
+  }
+  .boot-line:nth-child(1) { animation-delay: 0.6s; }
+  .boot-line:nth-child(2) { animation-delay: 1.0s; }
+  .boot-line:nth-child(3) { animation-delay: 1.4s; }
+  .boot-line:nth-child(4) { animation-delay: 1.8s; }
+  .boot-line:nth-child(5) { animation-delay: 2.2s; }
+  @keyframes bootLine {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .hero-name {
+    font-family: var(--sans);
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    opacity: 0;
+    animation: fadeUp 0.8s 2.6s ease forwards;
+  }
+
+  .hero-name span {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--accent);
+  }
+
+  .hero-tagline {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    max-width: 520px;
+    opacity: 0;
+    animation: fadeUp 0.8s 3s ease forwards;
+  }
+
+  .hero-meta {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 3.2s ease forwards;
+  }
+
+  .hero-stat {
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+  }
+  .hero-stat-val {
+    font-family: var(--sans);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 3.4s ease forwards;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.75rem;
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #00f5c4; transform: translateY(-2px); }
+
+  .btn-ghost {
+    padding: 0.75rem 1.75rem;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeIn 1s 4s ease forwards;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--text-muted), transparent);
+    animation: scrollLine 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.3); opacity: 0.3; }
+  }
+
+  /* ═══════════════════════════════════
+     SHARED SECTION STYLES
+  ═══════════════════════════════════ */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: var(--sans);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal.delay-1 { transition-delay: 0.1s; }
+  .reveal.delay-2 { transition-delay: 0.2s; }
+  .reveal.delay-3 { transition-delay: 0.3s; }
+
+  /* ═══════════════════════════════════
+     ABOUT — MINDSET AS CONFIG
+  ═══════════════════════════════════ */
+  #about {
+    border-top: 1px solid var(--border);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .config-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    font-size: 0.78rem;
+    line-height: 2;
+    position: relative;
+  }
+  .config-block::before {
+    content: attr(data-file);
+    position: absolute;
+    top: -1px;
+    left: 0;
+    font-size: 0.65rem;
+    background: var(--accent);
+    color: #000;
+    padding: 0.15rem 0.6rem;
+    font-weight: 600;
+  }
+  .config-block .key { color: var(--accent2); }
+  .config-block .val { color: #a8ff78; }
+  .config-block .val-str { color: #f7c948; }
+  .config-block .comment { color: var(--text-muted); }
+
+  .about-prose {
+    padding-top: 1.5rem;
+  }
+  .about-prose p {
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+  }
+  .about-prose p strong {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  /* ═══════════════════════════════════
+     SKILLS — ARCHITECTURE LAYERS
+  ═══════════════════════════════════ */
+  #skills {
+    border-top: 1px solid var(--border);
+  }
+
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .arch-layer {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .arch-layer:last-child { border-bottom: none; }
+  .arch-layer:hover { background: rgba(0,212,170,0.03); }
+
+  .arch-layer-name {
+    padding: 1.25rem 1.5rem;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.01);
+  }
+  .arch-layer-name .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .arch-layer-chips {
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .chip {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    letter-spacing: 0.05em;
+    cursor: default;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .chip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--chip-color, var(--accent));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .chip:hover::after { opacity: 0.08; }
+  .chip:hover {
+    border-color: var(--chip-color, var(--accent));
+    color: var(--chip-color, var(--accent));
+  }
+
+  .chip.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,170,0.05);
+  }
+
+  /* ═══════════════════════════════════
+     PROJECTS — DEPLOYED SYSTEMS
+  ═══════════════════════════════════ */
+  #projects {
+    border-top: 1px solid var(--border);
+  }
+
+  .projects-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .project-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .project-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .project-system-id {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .project-name {
+    font-family: var(--sans);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .project-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    color: var(--accent);
+    white-space: nowrap;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--accent);
+    background: rgba(0,212,170,0.05);
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  .project-body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-col {
+    padding: 1.25rem 1.5rem;
+    border-right: 1px solid var(--border);
+  }
+  .project-col:last-child { border-right: none; }
+
+  .project-col-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .project-col-label::before {
+    content: '//';
+    color: var(--accent);
+  }
+
+  .project-col-content {
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .project-footer {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .project-stack {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .stack-tag {
+    font-size: 0.65rem;
+    color: var(--accent2);
+    padding: 0.15rem 0.5rem;
+    border: 1px solid rgba(0, 151, 255, 0.3);
+    background: rgba(0, 151, 255, 0.04);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .project-links a {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .project-links a:hover { color: var(--accent); }
+
+  /* ═══════════════════════════════════
+     EXPERIENCE — INCIDENT LOG
+  ═══════════════════════════════════ */
+  #experience {
+    border-top: 1px solid var(--border);
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--border));
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 3.5rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.35rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .timeline-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .timeline-role {
+    font-family: var(--sans);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  .timeline-company {
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .timeline-period {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    letter-spacing: 0.08em;
+  }
+
+  .incident-log {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .incident-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 1rem;
+    font-size: 0.78rem;
+  }
+  .incident-key {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding-top: 0.15rem;
+  }
+  .incident-val { color: var(--text); line-height: 1.6; }
+  .incident-val strong { color: var(--text-bright); }
+
+  /* ═══════════════════════════════════
+     CONTACT
+  ═══════════════════════════════════ */
+  #contact {
+    border-top: 1px solid var(--border);
+    padding-bottom: 8rem;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .contact-headline {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .contact-headline span { color: var(--accent); }
+
+  .contact-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    max-width: 360px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    padding: 0.9rem 1.25rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.78rem;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+  .contact-link span {
+    flex: 1;
+  }
+  .contact-link .link-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    flex: none;
+  }
+  .contact-link:hover .link-label { color: var(--accent); }
+
+  /* ═══════════════════════════════════
+     FOOTER
+  ═══════════════════════════════════ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ═══════════════════════════════════
+     ANIMATED GRID BG
+  ═══════════════════════════════════ */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Hero network nodes */
+  .network-canvas {
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+    height: 360px;
+    opacity: 0;
+    animation: fadeIn 1.5s 3s ease forwards;
+  }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .project-body { grid-template-columns: 1fr; }
+    .project-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .project-col:last-child { border-bottom: none; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .network-canvas { display: none; }
+    nav .nav-links { display: none; }
+    .timeline-period { margin-left: 0; }
+    .incident-row { grid-template-columns: 70px 1fr; }
+  }
+
+  /* Command line blink */
+  .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Section dividers with label */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <span class="status-dot"></span>
+    ROHIT.NALE — ONLINE
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">01 / About</a></li>
+    <li><a href="#skills">02 / Stack</a></li>
+    <li><a href="#projects">03 / Systems</a></li>
+    <li><a href="#experience">04 / Ops Log</a></li>
+    <li><a href="#contact">05 / Connect</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="position: relative;">
+
+  <!-- Animated network SVG -->
+  <svg class="network-canvas" viewBox="0 0 420 360" fill="none">
+    <defs>
+      <marker id="arr" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+        <path d="M0,0 L4,2 L0,4 Z" fill="rgba(0,212,170,0.4)"/>
+      </marker>
+    </defs>
+    <!-- Lines -->
+    <line x1="210" y1="40" x2="100" y2="140" stroke="rgba(0,212,170,0.2)" stroke-width="1" marker-end="url(#arr)">
+      <animate attributeName="stroke-opacity" values="0.15;0.5;0.15" dur="3s" repeatCount="indefinite"/>
+    </line>
+    <line x1="210" y1="40" x2="320" y2="140" stroke="rgba(0,151,255,0.2)" stroke-width="1" marker-end="url(#arr)">
+      <animate attributeName="stroke-opacity" values="0.1;0.4;0.1" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+    </line>
+    <line x1="100" y1="140" x2="80" y2="250" stroke="rgba(0,212,170,0.2)" stroke-width="1">
+      <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </line>
+    <line x1="100" y1="140" x2="200" y2="250" stroke="rgba(0,212,170,0.15)" stroke-width="1">
+      <animate attributeName="stroke-opacity" values="0.1;0.4;0.1" dur="3.5s" begin="0.3s" repeatCount="indefinite"/>
+    </line>
+    <line x1="320" y1="140" x2="220" y2="250" stroke="rgba(0,151,255,0.15)" stroke-width="1">
+      <animate attributeName="stroke-opacity" values="0.2;0.5;0.2" dur="2.2s" begin="0.8s" repeatCount="indefinite"/>
+    </line>
+    <line x1="320" y1="140" x2="350" y2="250" stroke="rgba(0,151,255,0.15)" stroke-width="1">
+      <animate attributeName="stroke-opacity" values="0.1;0.45;0.1" dur="4s" begin="0.2s" repeatCount="indefinite"/>
+    </line>
+    <!-- Nodes -->
+    <!-- API Gateway -->
+    <rect x="160" y="20" width="100" height="36" rx="0" fill="rgba(0,212,170,0.08)" stroke="rgba(0,212,170,0.5)" stroke-width="1"/>
+    <text x="210" y="43" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#00d4aa">API Gateway</text>
+    <!-- Services -->
+    <rect x="50" y="120" width="100" height="36" rx="0" fill="rgba(0,151,255,0.06)" stroke="rgba(0,151,255,0.4)" stroke-width="1"/>
+    <text x="100" y="143" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#0097ff">Auth Service</text>
+    <rect x="268" y="120" width="105" height="36" rx="0" fill="rgba(0,151,255,0.06)" stroke="rgba(0,151,255,0.4)" stroke-width="1"/>
+    <text x="320" y="143" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#0097ff">GraphQL API</text>
+    <!-- Data layer -->
+    <rect x="20" y="230" width="120" height="36" rx="0" fill="rgba(255,107,53,0.06)" stroke="rgba(255,107,53,0.3)" stroke-width="1"/>
+    <text x="80" y="253" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#ff6b35">PostgreSQL</text>
+    <rect x="155" y="230" width="100" height="36" rx="0" fill="rgba(255,107,53,0.06)" stroke="rgba(255,107,53,0.3)" stroke-width="1"/>
+    <text x="205" y="253" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#ff6b35">MongoDB</text>
+    <rect x="270" y="230" width="100" height="36" rx="0" fill="rgba(255,107,53,0.06)" stroke="rgba(255,107,53,0.3)" stroke-width="1"/>
+    <text x="320" y="253" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#ff6b35">Redis Cache</text>
+    <!-- Data flow packets -->
+    <circle r="3" fill="#00d4aa" opacity="0.7">
+      <animateMotion path="M210,40 L100,140" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#0097ff" opacity="0.7">
+      <animateMotion path="M210,40 L320,140" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#ff6b35" opacity="0.7">
+      <animateMotion path="M100,140 L80,250" dur="1.8s" begin="1.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#ff6b35" opacity="0.7">
+      <animateMotion path="M320,140 L350,250" dur="2.2s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Labels -->
+    <text x="210" y="310" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(110,118,129,0.6)" letter-spacing="2">REQUEST FLOW</text>
+    <text x="210" y="325" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(110,118,129,0.4)" letter-spacing="1">ROHIT.NALE / SYSTEM ARCHITECTURE</text>
+  </svg>
+
+  <div class="boot-sequence">
+    <div class="boot-line ok">Initializing runtime environment...</div>
+    <div class="boot-line ok">Loading Node.js core modules → GraphQL, Prisma, Express</div>
+    <div class="boot-line ok">Establishing database connections → PostgreSQL, MongoDB</div>
+    <div class="boot-line info">Engineer profile loaded → 3+ years production experience</div>
+    <div class="boot-line ok">System ready. Serving on PORT 3000 <span class="cursor-blink"></span></div>
+  </div>
+
+  <h1 class="hero-name">
+    Rohit<br><span>Nale</span>
+  </h1>
+
+  <p class="hero-tagline">
+    // Senior Backend Engineer · Systems that scale, APIs that don't break, databases that don't lie. Currently open to new deployments.
+  </p>
+
+  <div class="hero-meta">
+    <div class="hero-stat">
+      <span class="hero-stat-val">3+</span>
+      <span class="hero-stat-label">Years Production</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">5+</span>
+      <span class="hero-stat-label">Systems Shipped</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">10+</span>
+      <span class="hero-stat-label">Tech Capabilities</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">0</span>
+      <span class="hero-stat-label">Unresolved P0s</span>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#projects" class="btn-primary">View Deployed Systems →</a>
+    <a href="mailto:rohitnale0000@gmail.com" class="btn-ghost">Deploy Offer</a>
+  </div>
+
+  <div class="scroll-hint">SCROLL</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">01 / About</div>
+  <h2 class="section-title reveal">How I Think About Systems</h2>
+
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="config-block" data-file="engineer.config.json">
+        <span class="comment">// Rohit Nale — Engineering Profile</span><br>
+        {<br>
+        &nbsp;&nbsp;<span class="key">"mindset"</span>: <span class="val-str">"Systems-first, API-second, UI-last"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"approach"</span>: <span class="val-str">"Design for failure, optimize for clarity"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"defaultMode"</span>: <span class="val-str">"backend"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"openToCollaborate"</span>: <span class="val">true</span>,<br>
+        &nbsp;&nbsp;<span class="key">"yearsActive"</span>: <span class="val">3</span>,<br>
+        &nbsp;&nbsp;<span class="key">"interests"</span>: [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"API design"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"distributed systems"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"reverse engineering"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"scalable architecture"</span><br>
+        &nbsp;&nbsp;],<br>
+        &nbsp;&nbsp;<span class="key">"location"</span>: <span class="val-str">"Pune, IN"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"available"</span>: <span class="val">true</span><br>
+        }
+      </div>
+    </div>
+
+    <div class="about-prose reveal delay-2">
+      <p>I don't build features — I design <strong>systems that can handle tomorrow's load without breaking today's contracts</strong>. Every API I ship is a promise. Every database schema is a long-term decision. I take both seriously.</p>
+      <p>With a foundation in Node.js and TypeScript, I've worked across the full backend surface — from <strong>RESTful and GraphQL API design</strong> to database modeling with Prisma and Sequelize, to deploying containerized services on AWS. I think in terms of data flow, not just code.</p>
+      <p>I've reverse-engineered production APIs, built matching algorithms for real-time discovery, and integrated AI models into live pipelines. My most interesting work lives <strong>at the intersection of reliability and creativity</strong>.</p>
+      <p>Currently building at Prolance IT. Previously at iNDX Technology. Always looking for harder problems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">02 / Stack</div>
+  <h2 class="section-title reveal">Architecture Capabilities</h2>
+
+  <div class="arch-diagram reveal">
+    <!-- Layer: Client -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:#6e7681;"></div>
+        Client Layer
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip" style="--chip-color:#6e7681;">HTML</div>
+        <div class="chip" style="--chip-color:#6e7681;">CSS</div>
+        <div class="chip" style="--chip-color:#6e7681;">Bootstrap</div>
+        <div class="chip" style="--chip-color:#6e7681;">Svelte</div>
+        <div class="chip" style="--chip-color:#6e7681;">SvelteKit</div>
+      </div>
+    </div>
+    <!-- Layer: API Gateway -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:var(--accent2);"></div>
+        API Gateway
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip primary">Node.js</div>
+        <div class="chip primary">Express.js</div>
+        <div class="chip primary">GraphQL</div>
+        <div class="chip" style="--chip-color:var(--accent2);">REST APIs</div>
+        <div class="chip" style="--chip-color:var(--accent2);">Next.js</div>
+        <div class="chip" style="--chip-color:var(--accent2);">Remix</div>
+      </div>
+    </div>
+    <!-- Layer: Runtime -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:var(--accent);"></div>
+        Runtime / Lang
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip primary">TypeScript</div>
+        <div class="chip primary">JavaScript</div>
+        <div class="chip" style="--chip-color:var(--accent);">JWT Auth</div>
+        <div class="chip" style="--chip-color:var(--accent);">Passport.js</div>
+        <div class="chip" style="--chip-color:var(--accent);">Cookie Auth</div>
+      </div>
+    </div>
+    <!-- Layer: ORM -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:#a8ff78;"></div>
+        Data Access
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip" style="--chip-color:#a8ff78;">Prisma ORM</div>
+        <div class="chip" style="--chip-color:#a8ff78;">Sequelize</div>
+        <div class="chip" style="--chip-color:#a8ff78;">Mongoose</div>
+      </div>
+    </div>
+    <!-- Layer: Database -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:var(--warn);"></div>
+        Data Store
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip" style="--chip-color:var(--warn);">PostgreSQL</div>
+        <div class="chip" style="--chip-color:var(--warn);">MongoDB</div>
+        <div class="chip" style="--chip-color:var(--warn);">MySQL</div>
+        <div class="chip" style="--chip-color:var(--warn);">SQLite</div>
+        <div class="chip" style="--chip-color:var(--warn);">SQL</div>
+      </div>
+    </div>
+    <!-- Layer: Infra -->
+    <div class="arch-layer">
+      <div class="arch-layer-name">
+        <div class="dot" style="background:#f7c948;"></div>
+        Infra / DevOps
+      </div>
+      <div class="arch-layer-chips">
+        <div class="chip" style="--chip-color:#f7c948;">Docker</div>
+        <div class="chip" style="--chip-color:#f7c948;">AWS EC2</div>
+        <div class="chip" style="--chip-color:#f7c948;">AWS S3</div>
+        <div class="chip" style="--chip-color:#f7c948;">PM2</div>
+        <div class="chip" style="--chip-color:#f7c948;">Git</div>
+        <div class="chip" style="--chip-color:#f7c948;">Fly.io</div>
+        <div class="chip" style="--chip-color:#f7c948;">Burp Suite</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">03 / Deployed Systems</div>
+  <h2 class="section-title reveal">What I've Shipped to Production</h2>
+
+  <div class="projects-grid">
+
+    <!-- PROJECT: Cordia -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-system-id">SYS-001 · Dating Infrastructure</div>
+          <div class="project-name">Cordia — Matching Engine</div>
+        </div>
+        <div class="project-status"><span class="status-dot" style="width:5px;height:5px;"></span> LIVE</div>
+      </div>
+      <div class="project-body">
+        <div class="project-col">
+          <div class="project-col-label">Problem</div>
+          <div class="project-col-content">Real-time user discovery required precise geo-matching across thousands of concurrent users without sacrificing query performance or security.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Architecture</div>
+          <div class="project-col-content">GraphQL API over Node.js + Prisma with Haversine formula embedded in query logic for accurate distance calculations. Modular resolvers per feature domain.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Impact</div>
+          <div class="project-col-content">Shipped onboarding, discovery filters, and match flows. Engineered a secure data model that handles sensitive user data with zero-trust access patterns.</div>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <div class="stack-tag">Node.js</div>
+          <div class="stack-tag">GraphQL</div>
+          <div class="stack-tag">Prisma</div>
+          <div class="stack-tag">PostgreSQL</div>
+          <div class="stack-tag">JWT</div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">↗ GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT: Panda Stack AI -->
+    <div class="project-card reveal delay-1">
+      <div class="project-header">
+        <div>
+          <div class="project-system-id">SYS-002 · AI Infrastructure</div>
+          <div class="project-name">Panda Stack AI — MicroVM Orchestration</div>
+        </div>
+        <div class="project-status"><span class="status-dot" style="width:5px;height:5px;"></span> LIVE</div>
+      </div>
+      <div class="project-body">
+        <div class="project-col">
+          <div class="project-col-label">Problem</div>
+          <div class="project-col-content">On-demand microVM environments needed automated lifecycle management — spawn, configure, and teardown — with AI assistance integrated into the developer workflow.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Architecture</div>
+          <div class="project-col-content">REST APIs on Node.js + TypeScript orchestrating Fly.io microVMs. Docker containers managed via shell scripts. Anthropic AI model integrated for intelligent environment suggestions.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Impact</div>
+          <div class="project-col-content">Reduced manual environment setup time significantly. Enabled automated provisioning and supported internal dev tooling through a custom ticketing integration.</div>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <div class="stack-tag">Node.js</div>
+          <div class="stack-tag">TypeScript</div>
+          <div class="stack-tag">Docker</div>
+          <div class="stack-tag">Fly.io</div>
+          <div class="stack-tag">Anthropic AI</div>
+          <div class="stack-tag">Shell</div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">↗ GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT: Walmart RE -->
+    <div class="project-card reveal delay-2">
+      <div class="project-header">
+        <div>
+          <div class="project-system-id">SYS-003 · Security Research</div>
+          <div class="project-name">Walmart API — Reverse Engineering</div>
+        </div>
+        <div class="project-status" style="border-color:var(--warn); color:var(--warn); background:rgba(255,107,53,0.05)">⚡ RESEARCH</div>
+      </div>
+      <div class="project-body">
+        <div class="project-col">
+          <div class="project-col-label">Problem</div>
+          <div class="project-col-content">Automate credit card addition workflow for merchant platforms (Walmart, UPS) without browser automation — purely through API reconstruction.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Architecture</div>
+          <div class="project-col-content">Used Burp Suite to intercept and analyze Walmart's authentication flow. Reconstructed cookie-based sessions and replicated API calls via Node.js + Express.js scripts.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Impact</div>
+          <div class="project-col-content">Delivered automated, headless merchant onboarding. Demonstrated deep understanding of HTTP internals, auth token flows, and API surface analysis.</div>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <div class="stack-tag">Node.js</div>
+          <div class="stack-tag">Express.js</div>
+          <div class="stack-tag">Burp Suite</div>
+          <div class="stack-tag">Cookie Auth</div>
+          <div class="stack-tag">HTTP Analysis</div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">↗ GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT: Leave Mgmt -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-system-id">SYS-004 · HR Platform</div>
+          <div class="project-name">Leave Management System</div>
+        </div>
+        <div class="project-status"><span class="status-dot" style="width:5px;height:5px;"></span> DEPLOYED</div>
+      </div>
+      <div class="project-body">
+        <div class="project-col">
+          <div class="project-col-label">Problem</div>
+          <div class="project-col-content">Manual leave tracking caused approval delays, balance miscalculations, and poor visibility for both employees and managers in small to mid-size orgs.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Architecture</div>
+          <div class="project-col-content">Node.js + Express backend with Sequelize ORM on SQLite. Svelte frontend consuming REST APIs. Real-time status updates and automated balance calculation engine.</div>
+        </div>
+        <div class="project-col">
+          <div class="project-col-label">Impact</div>
+          <div class="project-col-content">Full-stack HRMS feature: real-time leave status, auto balance calculation, approval workflows, and a schema designed for HR data integrity and auditability.</div>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-stack">
+          <div class="stack-tag">Node.js</div>
+          <div class="stack-tag">Express.js</div>
+          <div class="stack-tag">Sequelize</div>
+          <div class="stack-tag">SQLite</div>
+          <div class="stack-tag">Svelte</div>
+          <div class="stack-tag">Bootstrap</div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">↗ GitHub</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">04 / Operations Log</div>
+  <h2 class="section-title reveal">Production Experience</h2>
+
+  <div class="timeline reveal">
+
+    <!-- CURRENT -->
+    <div class="timeline-item">
+      <div class="timeline-meta">
+        <span class="timeline-role">Web Developer (Backend)</span>
+        <span class="timeline-company">// Prolance IT · Surat, GJ</span>
+        <span class="timeline-period">SEP 2023 — PRESENT</span>
+      </div>
+      <div class="incident-log">
+        <div class="incident-row">
+          <div class="incident-key">Scope</div>
+          <div class="incident-val"><strong>Full-stack backend engineering</strong> across multiple client systems — AI platforms, dating apps, HRMS, and merchant automation tools.</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Shipped</div>
+          <div class="incident-val">Cordia dating app GraphQL APIs · Panda Stack AI microVM orchestration · proWork HRMS modules · Knot reverse-engineering automation</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Key Win</div>
+          <div class="incident-val">Integrated <strong>Anthropic AI</strong> into a live developer tool pipeline, reducing environment setup friction and enabling AI-assisted configuration recommendations.</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Stack</div>
+          <div class="incident-val">Node.js · TypeScript · GraphQL · Prisma · PostgreSQL · MongoDB · Docker · Fly.io · Express.js</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIOUS -->
+    <div class="timeline-item">
+      <div class="timeline-meta">
+        <span class="timeline-role">Full Stack Developer</span>
+        <span class="timeline-company">// iNDX Technology · Mumbai, MH</span>
+        <span class="timeline-period">OCT 2022 — AUG 2023</span>
+      </div>
+      <div class="incident-log">
+        <div class="incident-row">
+          <div class="incident-key">Scope</div>
+          <div class="incident-val">Backend development and database engineering for client web applications, with a focus on <strong>secure API design and reliable data modeling</strong>.</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Shipped</div>
+          <div class="incident-val">RESTful APIs on Node.js + PostgreSQL · CRUD applications · LMS portal contributions · JWT + Passport authentication systems</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Key Win</div>
+          <div class="incident-val">Established <strong>secure authentication flows</strong> using JWT and Passport.js, eliminating unauthorized access patterns across multiple projects.</div>
+        </div>
+        <div class="incident-row">
+          <div class="incident-key">Stack</div>
+          <div class="incident-val">Node.js · PostgreSQL · SQLite · Sequelize · JWT · Passport · REST APIs · Express.js</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">05 / Connect</div>
+  <div class="contact-grid">
+    <div class="reveal">
+      <h2 class="contact-headline">Ready to <span>deploy</span> something great?</h2>
+      <p class="contact-sub">I'm actively open to backend, full-stack, and API engineering roles. If you're building something that needs to scale reliably, let's talk.</p>
+      <a href="mailto:rohitnale0000@gmail.com" class="btn-primary" style="display:inline-block;">Send Request → rohitnale0000@gmail.com</a>
+    </div>
+    <div class="contact-links reveal delay-2">
+      <a href="mailto:rohitnale0000@gmail.com" class="contact-link">
+        <span>rohitnale0000@gmail.com</span>
+        <span class="link-label">Email</span>
+      </a>
+      <a href="tel:+919623933599" class="contact-link">
+        <span>+91 96239 33599</span>
+        <span class="link-label">Phone</span>
+      </a>
+      <a href="https://linkedin.com/in/rohit-nale-820762149" target="_blank" class="contact-link">
+        <span>linkedin.com/in/rohit-nale-820762149</span>
+        <span class="link-label">LinkedIn</span>
+      </a>
+      <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank" class="contact-link">
+        <span>github.com/Rohitnale000</span>
+        <span class="link-label">GitHub</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>ROHIT NALE · BACKEND SYSTEMS ENGINEER · PUNE, IN</span>
+  <span><span class="status-dot"></span> AVAILABLE FOR HIRE</span>
+</footer>
+
+<script>
+  // Nav scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,2842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rohit Nale — Node.js Backend Engineer</title>
+<meta name="description" content="Senior Node.js Backend Engineer. Building scalable APIs, reliable databases, and production-grade systems. Available in Pune, Mumbai & Remote.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — DARK NAVY + GOLD
+═══════════════════════════════════════════ */
+:root {
+  --navy-950: #04080f;
+  --navy-900: #070e1a;
+  --navy-800: #0c1628;
+  --navy-700: #0f1f38;
+  --navy-600: #142847;
+  --navy-500: #1b3460;
+
+  --gold:      #c9922a;
+  --gold-hi:   #e8b44a;
+  --gold-lo:   #8a6218;
+  --gold-dim:  rgba(201,146,42,0.12);
+  --gold-glow: 0 0 30px rgba(201,146,42,0.2), 0 0 80px rgba(201,146,42,0.07);
+
+  --amber:     #f0a500;
+  --amber-dim: rgba(240,165,0,0.08);
+
+  --white:     #f5f0e8;
+  --silver:    #9aaab8;
+  --dim:       #4a5a6e;
+  --border:    #142135;
+  --border-hi: #1e3352;
+
+  --green:     #4caf80;
+  --red:       #e05555;
+
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-mono:    'JetBrains Mono', 'Courier New', monospace;
+  --f-body:    'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy-950);
+  color: var(--silver);
+  font-family: var(--f-body);
+  overflow-x: hidden;
+  line-height: 1.6;
+  cursor: default;
+}
+
+/* ───── NOISE GRAIN ───── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ───── DECORATIVE BG LINES ───── */
+.bg-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 119px,
+      rgba(201,146,42,0.018) 120px
+    );
+}
+.bg-lines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 79px,
+      rgba(201,146,42,0.014) 80px
+    );
+}
+
+/* ───── GOLD RADIAL SPOTLIGHT ───── */
+.spotlight {
+  position: fixed;
+  top: -20vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(201,146,42,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  transition: all 0.4s;
+}
+nav.scrolled {
+  background: rgba(4,8,15,0.92);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.65rem;
+  border: 1px solid rgba(76,175,128,0.4);
+  background: rgba(76,175,128,0.06);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: var(--green);
+}
+.live-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(76,175,128,0.5); }
+  50%     { opacity:0.6; box-shadow: 0 0 0 4px rgba(76,175,128,0); }
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.1rem;
+  list-style: none;
+}
+.nav-links a {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--f-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  border-bottom: 1px solid transparent;
+}
+.nav-links a:hover {
+  color: var(--gold-hi);
+  border-bottom-color: var(--gold-lo);
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+#hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: clamp(3rem, 5vw, 5.4rem);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8.4rem 3rem 6rem;
+}
+
+/* Left content */
+.hero-left {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  max-width: 640px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+.hero-left::before {
+  content: none;
+}
+
+.hero-overline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  width: fit-content;
+  padding: 0.28rem 0.68rem;
+  border: 1px solid var(--border-hi);
+  background: transparent;
+  opacity: 0;
+  animation: riseIn 0.6s 0.3s ease forwards;
+}
+.hero-overline-line {
+  width: 18px; height: 1px;
+  background: var(--gold);
+}
+.hero-overline-text {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.hero-name {
+  font-family: var(--f-display);
+  font-size: clamp(3.05rem, 6vw, 5.4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  opacity: 0;
+  animation: riseIn 0.8s 0.5s ease forwards;
+}
+.hero-name .name-main {
+  display: block;
+}
+.hero-name .name-accent {
+  color: var(--gold-hi);
+}
+.hero-name .name-dim {
+  display: block;
+  margin-top: 0.22rem;
+  font-family: var(--f-mono);
+  font-size: clamp(0.68rem, 1.2vw, 0.86rem);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dim);
+  font-style: normal;
+  -webkit-text-stroke: 0;
+}
+
+.hero-descriptor {
+  margin-top: 0;
+  font-family: var(--f-mono);
+  font-size: 0.74rem;
+  color: var(--silver);
+  line-height: 1.92;
+  opacity: 0;
+  animation: riseIn 0.7s 0.8s ease forwards;
+}
+.hero-descriptor .tag {
+  display: inline-block;
+  color: var(--gold-hi);
+  background: transparent;
+  border: 1px solid var(--gold-lo);
+  padding: 0.05rem 0.5rem;
+  font-size: 0.72rem;
+  margin: 0 0.1rem;
+}
+
+.hero-signal {
+  margin-top: 0.25rem;
+  opacity: 0;
+  animation: riseIn 0.7s 0.95s ease forwards;
+}
+.signal-head,
+.signal-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.signal-head {
+  color: var(--gold);
+  margin-bottom: 0.45rem;
+}
+.signal-foot {
+  color: var(--dim);
+  margin-top: 0.42rem;
+}
+.signal-track {
+  position: relative;
+  height: 28px;
+  border: 1px solid var(--border-hi);
+  overflow: hidden;
+}
+.signal-wave {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(201,146,42,0.34), transparent);
+  transform: translateX(-100%);
+  animation: signalSweep 2.2s linear infinite;
+}
+.signal-node {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--gold-hi);
+  box-shadow: 0 0 0 0 rgba(232,180,74,0.55);
+  animation: signalPulse 1.8s ease-in-out infinite;
+}
+.signal-node.n1 { left: 12%; animation-delay: 0s; }
+.signal-node.n2 { left: 30%; animation-delay: 0.24s; }
+.signal-node.n3 { left: 48%; animation-delay: 0.48s; }
+.signal-node.n4 { left: 66%; animation-delay: 0.72s; }
+.signal-node.n5 { left: 84%; animation-delay: 0.96s; }
+
+.hero-rule {
+  margin: 0.35rem 0 0.45rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold-lo), transparent);
+  opacity: 0;
+  animation: fadeIn 0.6s 1.1s ease forwards;
+}
+
+.hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  background: transparent;
+  overflow: hidden;
+  opacity: 0;
+  animation: riseIn 0.6s 1.3s ease forwards;
+}
+.kpi {
+  padding: 1rem 1.1rem;
+  border-right: 1px solid var(--border);
+  position: relative;
+  transition: background 0.25s;
+}
+.kpi:last-child { border-right: none; }
+.kpi:hover { background: var(--navy-800); }
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.25s;
+}
+.kpi:hover::before { background: var(--gold); }
+.kpi-val {
+  font-family: var(--f-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--white);
+  display: block;
+  line-height: 1;
+}
+.kpi-label {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.15rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: riseIn 0.6s 1.5s ease forwards;
+}
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.8rem;
+  background: var(--gold);
+  color: var(--navy-950);
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--gold);
+  transition: all 0.25s;
+}
+.btn-gold:hover {
+  background: var(--gold-hi);
+  box-shadow: var(--gold-glow);
+  transform: translateY(-2px);
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.8rem;
+  background: transparent;
+  color: var(--silver);
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--border-hi);
+  transition: all 0.25s;
+}
+.btn-ghost:hover {
+  border-color: var(--gold-lo);
+  color: var(--gold-hi);
+  transform: translateY(-2px);
+}
+
+/* Hero Right — Terminal */
+.hero-terminal {
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.38), inset 0 1px 0 rgba(201,146,42,0.08);
+  opacity: 0;
+  animation: riseIn 0.8s 0.4s ease forwards;
+}
+.hero-terminal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.6;
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.tdot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-bar-title {
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  margin-left: 0.5rem;
+}
+.terminal-bar-path {
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  color: var(--gold-lo);
+  margin-left: auto;
+  letter-spacing: 0.05em;
+}
+
+.terminal-body {
+  padding: 1.4rem 1.5rem 1.8rem;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  line-height: 1.95;
+}
+.tl {
+  display: flex;
+  gap: 0.9rem;
+  opacity: 0;
+  animation: termLine 0.35s ease forwards;
+}
+.tl:nth-child(1)  { animation-delay: 0.7s; }
+.tl:nth-child(2)  { animation-delay: 1.05s; }
+.tl:nth-child(3)  { animation-delay: 1.4s; }
+.tl:nth-child(4)  { animation-delay: 1.75s; }
+.tl:nth-child(5)  { animation-delay: 2.1s; }
+.tl:nth-child(6)  { animation-delay: 2.45s; }
+.tl:nth-child(7)  { animation-delay: 2.8s; }
+.tl:nth-child(8)  { animation-delay: 3.15s; }
+.tl:nth-child(9)  { animation-delay: 3.5s; }
+.tl:nth-child(10) { animation-delay: 3.85s; }
+
+@keyframes termLine {
+  from { opacity:0; transform: translateX(-5px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+
+.ts  { color: var(--dim); flex-shrink:0; font-size: 0.62rem; padding-top: 0.05rem; }
+.tok { color: var(--green); flex-shrink:0; font-weight: 600; }
+.tinf{ color: var(--gold-hi); flex-shrink:0; font-weight: 600; }
+.twrn{ color: var(--amber); flex-shrink:0; }
+.tmsg{ color: var(--silver); }
+.thi { color: var(--white); }
+.tgold { color: var(--gold-hi); }
+.tdim { color: var(--dim); }
+
+.tcursor {
+  display: inline-block;
+  width: 7px; height: 0.85em;
+  background: var(--gold);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.terminal-footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 1.5rem;
+  background: transparent;
+}
+.tfstat {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.tfstat span { color: var(--gold-hi); }
+
+/* keyframes */
+@keyframes riseIn {
+  from { opacity:0; transform: translateY(18px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:1; }
+}
+@keyframes signalSweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(120%); }
+}
+@keyframes signalPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,180,74,0.5); opacity: 1; }
+  50% { box-shadow: 0 0 0 8px rgba(232,180,74,0); opacity: 0.65; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal-wave,
+  .signal-node,
+  .principles::after,
+  .about-right::before,
+  .profile-card::before,
+  .backend-stack::after,
+  .principles.on .principle,
+  .about-right.on .about-block,
+  .about-right.on .fact-card,
+  .about-right.on .system-item,
+  .about-right.on .profile-card,
+  .backend-stack.on .arch-layer,
+  .backend-stack.on .arch-layer::after,
+  .runtime-layer .layer-activity::before,
+  .api-layer .layer-activity::before,
+  .api-layer .layer-activity::after,
+  .infra-layer .layer-activity::before,
+  .background-layer .layer-activity::before,
+  .observability-layer .layer-activity::before,
+  .data-layer .layer-activity::before {
+    animation: none;
+  }
+  .principle {
+    opacity: 1;
+    transform: none;
+  }
+  .about-block,
+  .fact-card,
+  .system-item,
+  .profile-card,
+  .arch-layer,
+  .deploy-node,
+  .bp-row {
+    opacity: 1;
+    transform: none;
+  }
+  .advanced-layer-wrap {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   SHARED SECTION STYLES
+═══════════════════════════════════════════ */
+.wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+.section {
+  padding: 8rem 0;
+  position: relative;
+  z-index: 1;
+}
+.section + .section {
+  border-top: 1px solid var(--border);
+}
+
+.sec-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.sec-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+
+.sec-title {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 4rem;
+}
+
+/* REVEAL */
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.rv.on { opacity:1; transform: translateY(0); }
+.rv.d1 { transition-delay: 0.1s; }
+.rv.d2 { transition-delay: 0.2s; }
+.rv.d3 { transition-delay: 0.3s; }
+.rv.d4 { transition-delay: 0.4s; }
+
+/* ═══════════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════════ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4rem;
+  align-items: start;
+}
+
+.principles {
+  display: grid;
+  gap: 0.7rem;
+  position: relative;
+  padding-left: 1.05rem;
+}
+.principles::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(201,146,42,0.45), rgba(30,51,82,0.2));
+}
+.principles::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-hi);
+  box-shadow: 0 0 0 0 rgba(232,180,74,0.45);
+  animation: railPulse 2.3s ease-in-out infinite;
+}
+.principle {
+  background: var(--navy-900);
+  border: 1px solid var(--border);
+  padding: 1.4rem 1.6rem;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 1.1rem;
+  align-items: start;
+  transition: background 0.2s, transform 0.25s, border-color 0.25s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+}
+.principle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.25s;
+}
+.principle:hover {
+  background: var(--navy-800);
+  transform: translateX(4px);
+  border-color: var(--gold-lo);
+}
+.principle:hover::before {
+  background: var(--gold);
+}
+.principles.on .principle {
+  animation: principleRise 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.principles.on .principle:nth-child(1) { animation-delay: 0.04s; }
+.principles.on .principle:nth-child(2) { animation-delay: 0.12s; }
+.principles.on .principle:nth-child(3) { animation-delay: 0.2s; }
+.principles.on .principle:nth-child(4) { animation-delay: 0.28s; }
+.principles.on .principle:nth-child(5) { animation-delay: 0.36s; }
+.pr-num {
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+  width: 34px; height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+.pr-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.01em;
+}
+.pr-desc {
+  font-size: 0.8rem;
+  color: var(--silver);
+  line-height: 1.7;
+}
+
+.about-right {
+  position: relative;
+  border: 1px solid var(--border);
+  padding: 1.2rem 1.25rem 1.3rem;
+  background:
+    linear-gradient(180deg, rgba(201,146,42,0.02), rgba(4,8,15,0)),
+    rgba(7,14,26,0.4);
+  overflow: hidden;
+}
+.about-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background-size: 200% 100%;
+  animation: panelSweep 6s linear infinite;
+}
+
+.about-block {
+  padding-top: 0.88rem;
+  margin-bottom: 1rem;
+  border-top: 1px solid rgba(30,51,82,0.65);
+  opacity: 0;
+  transform: translateY(8px);
+}
+.about-block:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+.about-right.on .about-block {
+  animation: aboutTextIn 0.46s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.about-right.on .about-block:nth-child(1) { animation-delay: 0.04s; }
+.about-right.on .about-block:nth-child(2) { animation-delay: 0.12s; }
+.about-right.on .about-block:nth-child(3) { animation-delay: 0.2s; }
+.about-right.on .about-block:nth-child(4) { animation-delay: 0.28s; }
+
+.about-block-label {
+  font-family: var(--f-mono);
+  font-size: 0.57rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.55rem;
+}
+.about-right p {
+  font-size: 0.88rem;
+  line-height: 1.88;
+  color: var(--silver);
+  margin-bottom: 0;
+  max-width: 62ch;
+}
+
+.about-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.72rem 0 0;
+}
+.fact-card {
+  border: 1px solid var(--border-hi);
+  background: rgba(4,8,15,0.42);
+  padding: 0.62rem 0.7rem;
+  opacity: 0;
+  transform: translateY(8px);
+}
+.about-right.on .fact-card {
+  animation: aboutTextIn 0.46s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.about-right.on .fact-card:nth-child(1) { animation-delay: 0.1s; }
+.about-right.on .fact-card:nth-child(2) { animation-delay: 0.16s; }
+.about-right.on .fact-card:nth-child(3) { animation-delay: 0.22s; }
+.fact-value {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 1.28rem;
+  line-height: 1;
+  color: var(--white);
+}
+.fact-label {
+  display: block;
+  margin-top: 0.32rem;
+  font-family: var(--f-mono);
+  font-size: 0.57rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.systems-list {
+  display: grid;
+  gap: 0.56rem;
+  margin-top: 0.72rem;
+}
+.system-item {
+  border: 1px solid var(--border-hi);
+  background: rgba(4,8,15,0.45);
+  padding: 0.66rem 0.76rem;
+  opacity: 0;
+  transform: translateY(8px);
+}
+.about-right.on .system-item {
+  animation: aboutTextIn 0.46s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.about-right.on .system-item:nth-child(1) { animation-delay: 0.18s; }
+.about-right.on .system-item:nth-child(2) { animation-delay: 0.24s; }
+.about-right.on .system-item:nth-child(3) { animation-delay: 0.3s; }
+.about-right.on .system-item:nth-child(4) { animation-delay: 0.36s; }
+
+.system-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.3rem;
+}
+.system-name {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--white);
+}
+.system-stack {
+  font-family: var(--f-mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-hi);
+  text-transform: uppercase;
+}
+.system-desc {
+  font-size: 0.77rem;
+  color: var(--silver);
+  line-height: 1.68;
+}
+.about-right p strong { color: var(--white); }
+.about-right p .mono {
+  font-family: var(--f-mono);
+  font-size: 0.82em;
+  color: var(--gold-hi);
+  background: var(--gold-dim);
+  padding: 0.05rem 0.4rem;
+}
+
+.profile-card {
+  margin-top: 1.7rem;
+  border: 1px solid var(--border-hi);
+  background:
+    linear-gradient(180deg, rgba(201,146,42,0.03), rgba(12,22,40,0)),
+    var(--navy-800);
+  padding: 1.35rem 1.45rem;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+}
+.about-right.on .profile-card {
+  animation: profileRise 0.52s cubic-bezier(0.16,1,0.3,1) 0.32s forwards;
+}
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background-size: 200% 100%;
+  animation: cardScan 5.5s linear infinite;
+}
+.profile-card-label {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.profile-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pr-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.pr-row:last-child { border-bottom: none; }
+.pr-key { color: var(--dim); letter-spacing: 0.05em; }
+.pr-val { color: var(--white); }
+.pr-val .chip-sm {
+  display: inline-block;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+  color: var(--gold-hi);
+  padding: 0.05rem 0.45rem;
+  font-size: 0.65rem;
+  margin-right: 0.3rem;
+}
+@keyframes railPulse {
+  0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 rgba(232,180,74,0.45); }
+  50% { transform: translateY(66px); box-shadow: 0 0 0 7px rgba(232,180,74,0); }
+}
+@keyframes cardScan {
+  from { background-position: 0% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes panelSweep {
+  from { background-position: 0% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes principleRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes aboutTextIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes profileRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════
+   LIVE BACKEND ARCHITECTURE STACK
+═══════════════════════════════════════════ */
+.arch-philosophy {
+  margin: -2.55rem 0 2rem;
+  max-width: 74ch;
+  font-size: 0.88rem;
+  line-height: 1.86;
+  color: var(--silver);
+}
+
+.backend-stack {
+  position: relative;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(201,146,42,0.02), rgba(7,14,26,0.78)),
+    var(--navy-950);
+  overflow: hidden;
+}
+.backend-stack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 32px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(201,146,42,0.58), rgba(30,51,82,0.25));
+}
+.backend-stack::after {
+  content: '';
+  position: absolute;
+  left: 31px;
+  top: 0;
+  width: 3px;
+  height: 46px;
+  background: linear-gradient(180deg, var(--gold-hi), transparent);
+  opacity: 0.75;
+  animation: spineSweep 4.2s linear infinite;
+}
+
+.stack-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.98rem 1.28rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7,14,26,0.68);
+}
+.stack-head-label {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.stack-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+}
+.stack-head-meta span {
+  font-family: var(--f-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-hi);
+  border: 1px solid var(--gold-lo);
+  background: var(--gold-dim);
+  padding: 0.13rem 0.42rem;
+}
+
+.stack-layers {
+  display: flex;
+  flex-direction: column;
+}
+
+.arch-layer {
+  position: relative;
+  padding: 1rem 1.25rem 1rem 3.6rem;
+  border-bottom: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.008), rgba(255,255,255,0)),
+    rgba(4,8,15,0.54);
+  opacity: 0;
+  transform: translateY(10px);
+}
+.arch-layer:last-child {
+  border-bottom: none;
+}
+.arch-layer::before {
+  content: attr(data-layer);
+  position: absolute;
+  top: 0.98rem;
+  left: 0.78rem;
+  width: 34px;
+  height: 20px;
+  border: 1px solid var(--gold-lo);
+  background: var(--gold-dim);
+  color: var(--gold-hi);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+}
+.arch-layer::after {
+  content: '';
+  position: absolute;
+  left: 32px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232,180,74,0.45), transparent);
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.backend-stack.on .arch-layer {
+  animation: layerBoot 0.48s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.backend-stack.on .arch-layer::after {
+  opacity: 1;
+  animation: laneTrace 4.8s linear infinite;
+}
+.backend-stack.on .arch-layer:nth-child(1) { animation-delay: 0.04s; }
+.backend-stack.on .arch-layer:nth-child(2) { animation-delay: 0.1s; }
+.backend-stack.on .arch-layer:nth-child(3) { animation-delay: 0.16s; }
+.backend-stack.on .arch-layer:nth-child(4) { animation-delay: 0.22s; }
+.backend-stack.on .arch-layer:nth-child(5) { animation-delay: 0.28s; }
+.backend-stack.on .arch-layer:nth-child(6) { animation-delay: 0.34s; }
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: minmax(170px, 220px) 1fr;
+  gap: 0.9rem;
+}
+.layer-name {
+  font-size: 0.9rem;
+  line-height: 1.1;
+  color: var(--white);
+  font-weight: 600;
+}
+.layer-role {
+  margin-top: 0.32rem;
+  font-family: var(--f-mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.layer-body p {
+  font-size: 0.78rem;
+  line-height: 1.68;
+  color: var(--silver);
+  max-width: 64ch;
+}
+.layer-caps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+  margin-top: 0.5rem;
+}
+.layer-caps li {
+  font-family: var(--f-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.74);
+  padding: 0.18rem 0.46rem;
+}
+.layer-caps li.core {
+  color: var(--gold-hi);
+  border-color: var(--gold-lo);
+  background: var(--gold-dim);
+}
+
+.layer-activity {
+  position: absolute;
+  top: 0.92rem;
+  right: 1.15rem;
+  width: 96px;
+  height: 16px;
+  pointer-events: none;
+}
+
+/* Runtime heartbeat */
+.runtime-layer .layer-activity {
+  border: 1px solid rgba(76,175,128,0.32);
+  background: rgba(76,175,128,0.06);
+}
+.runtime-layer .layer-activity::before {
+  content: '';
+  position: absolute;
+  inset: 3px 6px;
+  border-radius: 999px;
+  background: rgba(76,175,128,0.25);
+  animation: runtimeBeat 3.5s ease-in-out infinite;
+}
+
+/* API request / response flow */
+.api-layer .layer-activity {
+  border-top: 1px solid var(--gold-lo);
+  border-bottom: 1px solid var(--gold-lo);
+}
+.api-layer .layer-activity::before,
+.api-layer .layer-activity::after {
+  content: '';
+  position: absolute;
+  left: -28px;
+  width: 30px;
+  height: 1px;
+  background: var(--gold-hi);
+  animation: apiFlow 2.9s linear infinite;
+}
+.api-layer .layer-activity::before { top: 4px; }
+.api-layer .layer-activity::after  { bottom: 4px; animation-direction: reverse; }
+
+/* Data indexes on intentional interaction */
+.data-layer .layer-activity {
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.66);
+}
+.data-layer .layer-activity::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background:
+    repeating-linear-gradient(90deg, rgba(201,146,42,0.7) 0 2px, transparent 2px 14px);
+  clip-path: inset(0 100% 0 0);
+  animation: indexBuild 2.4s steps(6) infinite paused;
+}
+.data-layer:hover .layer-activity::before,
+.data-layer:focus-within .layer-activity::before {
+  animation-play-state: running;
+}
+
+/* Infra sync trace */
+.infra-layer .layer-activity {
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.62);
+}
+.infra-layer .layer-activity::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(90deg, transparent, rgba(232,180,74,0.45), transparent);
+  transform: translateX(-100%);
+  animation: laneTrace 3.1s linear infinite;
+}
+
+/* Async queue */
+.background-layer .layer-activity {
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.62);
+}
+.background-layer .layer-activity::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-hi);
+  box-shadow:
+    15px 0 0 rgba(232,180,74,0.6),
+    30px 0 0 rgba(232,180,74,0.32);
+  animation: queuePulse 2.2s linear infinite;
+}
+
+/* Observability sweep */
+.observability-layer .layer-activity {
+  border: 1px solid rgba(76,175,128,0.34);
+  background: rgba(76,175,128,0.06);
+}
+.observability-layer .layer-activity::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(90deg, transparent, rgba(76,175,128,0.5), transparent);
+  transform: translateX(-100%);
+  animation: monitorSweep 2.8s linear infinite;
+}
+
+.advanced-toggle-row {
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 1.25rem 0.92rem 3.6rem;
+  background: rgba(4,8,15,0.64);
+}
+.advanced-toggle {
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.84);
+  color: var(--silver);
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.36rem 0.74rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.advanced-toggle:hover,
+.advanced-toggle:focus-visible {
+  outline: none;
+  color: var(--gold-hi);
+  border-color: var(--gold-lo);
+  background: var(--gold-dim);
+}
+
+.advanced-layer-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.54s cubic-bezier(0.16,1,0.3,1);
+}
+.backend-stack.advanced-open .advanced-layer-wrap {
+  max-height: 260px;
+}
+.advanced-layer {
+  border-top: none;
+  background:
+    linear-gradient(180deg, rgba(201,146,42,0.025), rgba(4,8,15,0.5)),
+    rgba(7,14,26,0.7);
+  opacity: 1;
+  transform: none;
+}
+
+.operating-principle {
+  margin-top: 1.25rem;
+  border: 1px solid var(--border);
+  background: rgba(7,14,26,0.56);
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.72;
+  color: var(--silver);
+}
+.operating-principle .op-key {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-family: var(--f-mono);
+  font-size: 0.57rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.operating-principle strong {
+  color: var(--white);
+}
+
+@keyframes spineSweep {
+  0% { transform: translateY(0); opacity: 0.75; }
+  60% { opacity: 0.35; }
+  100% { transform: translateY(calc(100% - 46px)); opacity: 0.75; }
+}
+@keyframes layerBoot {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes laneTrace {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(120%); }
+}
+@keyframes runtimeBeat {
+  0%, 100% { opacity: 0.35; transform: scaleX(0.65); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+@keyframes apiFlow {
+  from { transform: translateX(0); opacity: 0; }
+  18% { opacity: 1; }
+  82% { opacity: 1; }
+  to { transform: translateX(120px); opacity: 0; }
+}
+@keyframes indexBuild {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes queuePulse {
+  0%, 100% { transform: translateX(0); opacity: 0.9; }
+  50% { transform: translateX(22px); opacity: 0.52; }
+}
+@keyframes monitorSweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(115%); }
+}
+
+/* ═══════════════════════════════════════════
+   PROJECTS
+═══════════════════════════════════════════ */
+.deploy-intro {
+  margin: -2.45rem 0 1.65rem;
+  max-width: 76ch;
+  font-size: 0.88rem;
+  line-height: 1.84;
+  color: var(--silver);
+}
+
+.deploy-timeline {
+  position: relative;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(201,146,42,0.02), rgba(7,14,26,0.7)),
+    var(--navy-950);
+  overflow: hidden;
+}
+.deploy-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 34px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(201,146,42,0.62), rgba(30,51,82,0.24));
+}
+.deploy-timeline::after {
+  content: '';
+  position: absolute;
+  left: 33px;
+  top: 0;
+  width: 2px;
+  height: 54px;
+  background: linear-gradient(180deg, var(--gold-hi), transparent);
+  opacity: 0.8;
+}
+
+.deploy-node {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.2rem 1rem 3.7rem;
+  background: rgba(4,8,15,0.5);
+  opacity: 1;
+  transform: none;
+}
+.deploy-node:last-child {
+  border-bottom: none;
+}
+.deploy-node::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 1.22rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-lo);
+  background: rgba(201,146,42,0.2);
+  box-shadow: 0 0 0 0 rgba(232,180,74,0.35);
+}
+.deploy-node::after {
+  content: '';
+  position: absolute;
+  left: 35px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232,180,74,0.48), transparent);
+  opacity: 0.4;
+}
+
+.deploy-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.85rem 1rem;
+  align-items: center;
+}
+.deploy-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+.deploy-id {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 66px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--gold-lo);
+  background: var(--gold-dim);
+  font-family: var(--f-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.09em;
+  color: var(--gold-hi);
+  text-transform: uppercase;
+}
+.deploy-stack {
+  font-family: var(--f-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+.deploy-title {
+  font-family: var(--f-display);
+  font-size: 1.22rem;
+  line-height: 1.08;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.deploy-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--f-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+  padding: 0.22rem 0.62rem;
+}
+.deploy-status .ds-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.deploy-status.live {
+  color: var(--green);
+  border-color: rgba(76,175,128,0.4);
+  background: rgba(76,175,128,0.06);
+}
+.deploy-status.live .ds-dot {
+  background: var(--green);
+}
+.deploy-status.internal {
+  color: var(--amber);
+  border-color: rgba(240,165,0,0.4);
+  background: rgba(240,165,0,0.07);
+}
+.deploy-status.internal .ds-dot {
+  background: var(--amber);
+}
+
+.deploy-toggle {
+  margin-top: 0.68rem;
+  border: 1px solid var(--border-hi);
+  background: rgba(7,14,26,0.84);
+  color: var(--silver);
+  font-family: var(--f-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.34rem 0.72rem;
+  cursor: pointer;
+}
+.deploy-toggle:hover,
+.deploy-toggle:focus-visible {
+  outline: none;
+  border-color: var(--gold-lo);
+  color: var(--gold-hi);
+  background: var(--gold-dim);
+}
+
+.deploy-blueprint {
+  max-height: 0;
+  overflow: hidden;
+  border-top: 1px solid transparent;
+}
+.deploy-node.open .deploy-blueprint {
+  max-height: 740px;
+  border-top-color: var(--border);
+}
+.deploy-blueprint-inner {
+  padding: 0.86rem 0 0.16rem;
+}
+.bp-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 152px 1fr;
+  gap: 0.95rem;
+  border-bottom: 1px solid var(--border);
+  padding: 0.62rem 0;
+  opacity: 1;
+  transform: none;
+}
+.bp-row:last-child {
+  border-bottom: none;
+}
+.bp-row::after {
+  content: '';
+  position: absolute;
+  left: 152px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232,180,74,0.35), transparent);
+  opacity: 0.38;
+}
+
+.bp-key {
+  font-family: var(--f-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 0.1rem;
+}
+.bp-val {
+  font-size: 0.78rem;
+  line-height: 1.67;
+  color: var(--silver);
+}
+.bp-val strong {
+  color: var(--white);
+}
+
+.bp-cap-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.bp-cap {
+  font-family: var(--f-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--border-hi);
+  color: var(--dim);
+  background: rgba(7,14,26,0.72);
+  padding: 0.15rem 0.42rem;
+}
+.bp-cap.core {
+  color: var(--gold-hi);
+  border-color: var(--gold-lo);
+  background: var(--gold-dim);
+}
+
+.deploy-linkline {
+  margin-top: 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: center;
+}
+.deploy-linkline .note {
+  font-family: var(--f-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+.deploy-linkline a {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-hi);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.deploy-linkline a:hover {
+  border-bottom-color: var(--gold-lo);
+}
+
+/* ═══════════════════════════════════════════
+   EXPERIENCE
+═══════════════════════════════════════════ */
+.exp-wrap {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.exp-sidebar {
+  position: sticky;
+  top: 5rem;
+}
+
+.exp-company-card {
+  background: var(--navy-900);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  position: relative;
+}
+.exp-company-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+}
+.exp-company {
+  font-family: var(--f-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+.exp-title-role {
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.5rem;
+}
+.exp-duration {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.exp-dur-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+}
+.exp-dur-key { color: var(--dim); letter-spacing: 0.05em; }
+.exp-dur-val { color: var(--silver); }
+.exp-dur-val.green { color: var(--green); }
+.exp-dur-val.gold { color: var(--gold-hi); }
+
+.exp-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.exp-row {
+  background: var(--navy-950);
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  transition: background 0.2s;
+}
+.exp-row:hover { background: var(--navy-900); }
+
+.exp-key {
+  padding: 1rem 1.2rem;
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-right: 1px solid var(--border);
+  background: rgba(201,146,42,0.02);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 1.1rem;
+}
+.exp-val {
+  padding: 1rem 1.4rem;
+  font-size: 0.82rem;
+  color: var(--silver);
+  line-height: 1.7;
+}
+.exp-val strong { color: var(--white); }
+.exp-val .etag {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 0.63rem;
+  color: var(--gold-hi);
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-lo);
+  padding: 0.08rem 0.45rem;
+  margin: 0.1rem 0.2rem 0.1rem 0;
+}
+
+/* ═══════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════ */
+.contact-section {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 8rem 0 6rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.contact-hl {
+  font-family: var(--f-display);
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+}
+.contact-hl .italic-gold {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.contact-copy {
+  font-size: 0.88rem;
+  color: var(--silver);
+  line-height: 1.85;
+  max-width: 400px;
+  margin-bottom: 2.5rem;
+}
+
+.api-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--navy-800);
+  border: 1px solid var(--border-hi);
+  padding: 0.65rem 1.1rem;
+  margin-bottom: 2rem;
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+}
+.api-pill .method {
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.api-pill .route { color: var(--white); flex: 1; }
+.api-pill .http  { color: var(--dim); }
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.clink {
+  display: grid;
+  grid-template-columns: 80px 1fr 24px;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem 1.3rem;
+  border: 1px solid var(--border);
+  background: var(--navy-900);
+  text-decoration: none;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.clink::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(201,146,42,0.08), transparent);
+  transition: width 0.3s;
+}
+.clink:hover::before { width: 100%; }
+.clink:hover {
+  border-color: var(--gold-lo);
+  transform: translateX(6px);
+}
+.clink-type {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  position: relative;
+}
+.clink-val {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--silver);
+  position: relative;
+}
+.clink:hover .clink-val { color: var(--white); }
+.clink-arr {
+  font-size: 0.9rem;
+  color: var(--border-hi);
+  transition: color 0.25s;
+  position: relative;
+}
+.clink:hover .clink-arr { color: var(--gold); }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 3rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.foot-l {
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+}
+.foot-r {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  #hero { grid-template-columns: 1fr; gap: 2.1rem; padding: 6.3rem 3rem 4.8rem; }
+  .hero-left { max-width: none; gap: 0.9rem; }
+  .hero-terminal { margin-top: 0; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-right { padding: 1rem 1rem 1.1rem; }
+  .stack-head { grid-template-columns: 1fr; gap: 0.64rem; }
+  .layer-grid { grid-template-columns: 1fr; gap: 0.54rem; }
+  .layer-activity { position: static; width: 96px; margin-top: 0.55rem; }
+  .deploy-head { grid-template-columns: 1fr; }
+  .bp-row { grid-template-columns: 132px 1fr; }
+  .exp-wrap { grid-template-columns: 1fr; }
+  .exp-sidebar { position: static; }
+  .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+}
+@media (max-width: 768px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .wrap { padding: 0 1.5rem; }
+  #hero { padding: 5.5rem 1.5rem 3.5rem; gap: 1.55rem; }
+  .hero-left { gap: 0.82rem; }
+  .hero-name { font-size: clamp(2.45rem, 10vw, 3rem); }
+  .hero-name .name-dim { font-size: 0.62rem; }
+  .hero-overline { margin-bottom: 0; }
+  .hero-overline-text { letter-spacing: 0.12em; font-size: 0.56rem; }
+  .signal-track { height: 24px; }
+  .signal-head, .signal-foot { font-size: 0.54rem; letter-spacing: 0.08em; }
+  .hero-kpis { grid-template-columns: 1fr 1fr; }
+  .deploy-intro { margin: -2.1rem 0 1.1rem; font-size: 0.79rem; line-height: 1.72; }
+  .deploy-timeline::before { left: 22px; }
+  .deploy-timeline::after { left: 21px; width: 2px; height: 42px; }
+  .deploy-node { padding: 0.8rem 0.78rem 0.8rem 2.75rem; }
+  .deploy-node::before { left: 16px; top: 0.98rem; width: 10px; height: 10px; }
+  .deploy-node::after { left: 23px; }
+  .deploy-id { min-width: 58px; height: 20px; font-size: 0.49rem; }
+  .deploy-stack { font-size: 0.49rem; }
+  .deploy-title { font-size: 1.01rem; }
+  .deploy-status { font-size: 0.49rem; padding: 0.18rem 0.47rem; }
+  .deploy-toggle { margin-top: 0.56rem; font-size: 0.5rem; padding: 0.29rem 0.56rem; }
+  .deploy-blueprint-inner { padding-top: 0.7rem; }
+  .bp-row { grid-template-columns: 1fr; gap: 0.33rem; padding: 0.54rem 0; }
+  .bp-row::after { left: 0; }
+  .bp-key { font-size: 0.5rem; }
+  .bp-val { font-size: 0.71rem; line-height: 1.58; }
+  .bp-cap-list { gap: 0.23rem; }
+  .bp-cap { font-size: 0.48rem; padding: 0.13rem 0.3rem; }
+  .deploy-linkline { margin-top: 0.58rem; flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+  .deploy-linkline .note { font-size: 0.49rem; }
+  .deploy-linkline a { font-size: 0.53rem; }
+  .arch-philosophy { margin: -2rem 0 1.2rem; font-size: 0.81rem; line-height: 1.76; }
+  .backend-stack::before { left: 23px; }
+  .backend-stack::after { left: 22px; width: 2px; height: 40px; }
+  .stack-head { padding: 0.76rem 0.9rem; }
+  .stack-head-label { font-size: 0.54rem; letter-spacing: 0.1em; }
+  .stack-head-meta span { font-size: 0.47rem; padding: 0.12rem 0.35rem; }
+  .arch-layer { padding: 0.8rem 0.8rem 0.82rem 2.9rem; }
+  .arch-layer::before { left: 0.5rem; width: 28px; height: 18px; font-size: 0.47rem; }
+  .arch-layer::after { left: 23px; }
+  .layer-name { font-size: 0.79rem; }
+  .layer-role { font-size: 0.48rem; letter-spacing: 0.08em; }
+  .layer-body p { font-size: 0.72rem; line-height: 1.58; }
+  .layer-caps { gap: 0.24rem; margin-top: 0.42rem; }
+  .layer-caps li { font-size: 0.49rem; padding: 0.14rem 0.33rem; }
+  .layer-activity { width: 84px; height: 14px; margin-top: 0.45rem; }
+  .advanced-toggle-row { padding: 0.7rem 0.8rem 0.76rem 2.9rem; }
+  .advanced-toggle { font-size: 0.54rem; padding: 0.31rem 0.58rem; }
+  .operating-principle { margin-top: 0.9rem; padding: 0.66rem 0.76rem; font-size: 0.72rem; line-height: 1.62; }
+  .operating-principle .op-key { font-size: 0.5rem; margin-right: 0.4rem; }
+  .principles { padding-left: 0.7rem; }
+  .about-block { padding-top: 0.74rem; margin-bottom: 0.86rem; }
+  .about-block-label { font-size: 0.53rem; letter-spacing: 0.11em; margin-bottom: 0.45rem; }
+  .about-facts { grid-template-columns: 1fr; gap: 0.45rem; margin: 0.75rem 0 0.95rem; }
+  .fact-card { padding: 0.56rem 0.62rem; }
+  .fact-value { font-size: 1.05rem; }
+  .fact-label { font-size: 0.54rem; }
+  .about-right p { font-size: 0.84rem; line-height: 1.8; margin-bottom: 0; }
+  .system-item { padding: 0.56rem 0.62rem; }
+  .system-head { flex-direction: column; align-items: flex-start; gap: 0.2rem; margin-bottom: 0.24rem; }
+  .system-name { font-size: 0.77rem; }
+  .system-stack { font-size: 0.49rem; letter-spacing: 0.07em; }
+  .system-desc { font-size: 0.73rem; line-height: 1.58; }
+  .principle { padding: 1.1rem 1rem; grid-template-columns: 38px 1fr; gap: 0.8rem; }
+  .pr-title { font-size: 0.84rem; }
+  .pr-desc { font-size: 0.76rem; }
+  .profile-card { margin-top: 1.15rem; padding: 1rem; }
+  .pr-row { grid-template-columns: 90px 1fr; font-size: 0.64rem; }
+  footer { padding: 1.5rem; flex-direction: column; gap: 0.75rem; text-align: center; }
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--navy-950); }
+::-webkit-scrollbar-thumb { background: var(--gold-lo); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+::selection { background: var(--gold-dim); color: var(--gold-hi); }
+</style>
+</head>
+<body>
+
+<div class="bg-lines"></div>
+<div class="spotlight"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">
+    Rohit Nale
+    <div class="live-badge"><div class="live-dot"></div>AVAILABLE</div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Capabilities</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="wrap">
+<section id="hero">
+
+  <div class="hero-left">
+    <div class="hero-overline">
+      <div class="hero-overline-line"></div>
+      <div class="hero-overline-text">Senior Backend Developer · Node.js</div>
+    </div>
+
+    <h1 class="hero-name">
+      <span class="name-main">Rohit <span class="name-accent">Nale</span></span>
+      <span class="name-dim">I design backend systems so future engineers won’t hate me.</span>
+    </h1>
+
+    <p class="hero-descriptor">
+      APIs that <span class="tag">don't break at 3AM</span><br>
+      Databases that <span class="tag">scale without crying</span><br>
+      Systems built for <span class="tag">real-world load</span>
+    </p>
+
+    <div class="hero-signal" aria-label="backend runtime pulse">
+      <div class="signal-head">
+        <span>Backend Pulse</span>
+        <span>STATUS: STABLE</span>
+      </div>
+      <div class="signal-track">
+        <span class="signal-wave"></span>
+        <span class="signal-node n1"></span>
+        <span class="signal-node n2"></span>
+        <span class="signal-node n3"></span>
+        <span class="signal-node n4"></span>
+        <span class="signal-node n5"></span>
+      </div>
+      <div class="signal-foot">
+        <span>Queue Depth: 03</span>
+        <span>Throughput: 1.2K req/min</span>
+      </div>
+    </div>
+
+    <div class="hero-rule"></div>
+
+    <div class="hero-kpis">
+      <div class="kpi">
+        <span class="kpi-val">3+</span>
+        <span class="kpi-label">Yrs Production</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-val">5</span>
+        <span class="kpi-label">Systems Shipped</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-val">15d</span>
+        <span class="kpi-label">Notice Period</span>
+      </div>
+      <div class="kpi" style="border-right:none;">
+        <span class="kpi-val">∞</span>
+        <span class="kpi-label">Open P0s: 0</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="#projects" class="btn-gold">View Projects →</a>
+      <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank" class="btn-ghost">GitHub ↗</a>
+      <a href="mailto:rohitnale0000@gmail.com" class="btn-ghost">Hire Me</a>
+    </div>
+  </div>
+
+  <!-- Terminal -->
+  <div class="hero-terminal">
+    <div class="terminal-bar">
+      <div class="tdot" style="background:#ff5f57;"></div>
+      <div class="tdot" style="background:#febc2e;"></div>
+      <div class="tdot" style="background:#28c840;"></div>
+      <span class="terminal-bar-title">rohit@backend ~ node server.ts</span>
+      <span class="terminal-bar-path">~/prolance-it/production</span>
+    </div>
+    <div class="terminal-body">
+      <div class="tl"><span class="ts">[00:00:00]</span><span class="tinf">INFO</span><span class="tmsg">Booting server environment...</span></div>
+      <div class="tl"><span class="ts">[00:00:01]</span><span class="tok">OK  </span><span class="tmsg">Node.js v20 LTS · TypeScript strict mode <span class="tgold">✓</span></span></div>
+      <div class="tl"><span class="ts">[00:00:02]</span><span class="tok">OK  </span><span class="tmsg">PostgreSQL pool · <span class="tgold">10 connections</span> ready</span></div>
+      <div class="tl"><span class="ts">[00:00:03]</span><span class="tok">OK  </span><span class="tmsg">MongoDB · replica set <span class="tgold">connected</span></span></div>
+      <div class="tl"><span class="ts">[00:00:04]</span><span class="tok">OK  </span><span class="tmsg">Express.js · middleware chain loaded</span></div>
+      <div class="tl"><span class="ts">[00:00:05]</span><span class="tok">OK  </span><span class="tmsg">GraphQL · schema compiled · <span class="tgold">47 resolvers</span></span></div>
+      <div class="tl"><span class="ts">[00:00:06]</span><span class="tok">OK  </span><span class="tmsg">JWT auth · Prisma ORM · Sequelize ready</span></div>
+      <div class="tl"><span class="ts">[00:00:07]</span><span class="tok">OK  </span><span class="tmsg">Docker container · AWS EC2 · PM2 cluster</span></div>
+      <div class="tl"><span class="ts">[00:00:08]</span><span class="tinf">INFO</span><span class="tmsg">Engineer: <span class="thi">Rohit Nale</span> · Pune, IN · Remote OK</span></div>
+      <div class="tl"><span class="ts">[00:00:09]</span><span class="tok">READY</span><span class="tgold">Serving PORT 3000 · Uptime 100% <span class="tcursor"></span></span></div>
+    </div>
+    <div class="terminal-footer">
+      <div class="tfstat">Status <span>RUNNING</span></div>
+      <div class="tfstat">Env <span>PRODUCTION</span></div>
+      <div class="tfstat">Memory <span>clean</span></div>
+      <div class="tfstat">GitHub <span>Rohitnale000</span></div>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" class="section" style="border-top:1px solid var(--border);">
+<div class="wrap">
+  <div class="sec-label">01 — Backend Architecture</div>
+  <h2 class="sec-title rv">How I Engineer Systems</h2>
+
+  <div class="about-grid">
+    <div class="principles rv d1">
+      <div class="principle">
+        <div class="pr-num">01</div>
+        <div>
+          <div class="pr-title">Contract-First Interfaces</div>
+          <div class="pr-desc">Every module starts from REST or GraphQL contracts. API behavior stays explicit, versioned, and testable before controller logic expands.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pr-num">02</div>
+        <div>
+          <div class="pr-title">Data Model Before Feature Growth</div>
+          <div class="pr-desc">PostgreSQL and MongoDB schema decisions are made early with migration paths. Query shape and indexes are treated as part of the feature.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pr-num">03</div>
+        <div>
+          <div class="pr-title">Security Boundaries Built In</div>
+          <div class="pr-desc">JWT auth, RBAC rules, and validation gates are applied at service boundaries from day one, not retrofitted after release pressure starts.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pr-num">04</div>
+        <div>
+          <div class="pr-title">Operate with Signals</div>
+          <div class="pr-desc">Logs, traceable errors, and runtime checks are shipped with the feature so production incidents can be diagnosed without guesswork.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pr-num">05</div>
+        <div>
+          <div class="pr-title">Scale by Bottleneck, Not by Trend</div>
+          <div class="pr-desc">I tune query plans, connection pools, and background workflows only where load proves pressure. Scaling decisions stay measurable and reversible.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-right rv d2">
+      <div class="about-block">
+        <div class="about-block-label">// System-Oriented Introduction</div>
+        <p>I engineer backend systems as stable service contracts. Core runtime is <span class="mono">Node.js + TypeScript + Express.js</span> with <span class="mono">REST + GraphQL</span> interfaces over <span class="mono">PostgreSQL</span> and <span class="mono">MongoDB</span>.</p>
+      </div>
+
+      <div class="about-block">
+        <div class="about-block-label">// Production Context</div>
+        <p>At <strong>Prolance IT</strong>, responsibilities include API contract design, schema migration planning, query optimization, auth boundaries, and release operations across AI platforms, SaaS products, and HRMS systems.</p>
+        <div class="about-facts">
+          <div class="fact-card">
+            <span class="fact-value">2.5+</span>
+            <span class="fact-label">Years Production</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-value">4</span>
+            <span class="fact-label">Systems Delivered</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-value">3</span>
+            <span class="fact-label">ORM/ODMs Used</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <div class="about-block-label">// Systems Delivered</div>
+        <div class="systems-list">
+          <div class="system-item">
+            <div class="system-head">
+              <div class="system-name">Cordia</div>
+              <div class="system-stack">GraphQL · Geo-Matching</div>
+            </div>
+            <div class="system-desc">Built GraphQL services for location-aware matching, including Haversine-based resolver logic and optimized query paths for discovery flows.</div>
+          </div>
+          <div class="system-item">
+            <div class="system-head">
+              <div class="system-name">Panda Stack AI</div>
+              <div class="system-stack">MicroVM Lifecycle · AI</div>
+            </div>
+            <div class="system-desc">Implemented backend orchestration for microVM spawn, configuration, and teardown workflows with AI-assisted provisioning operations.</div>
+          </div>
+          <div class="system-item">
+            <div class="system-head">
+              <div class="system-name">proWork HRMS</div>
+              <div class="system-stack">Node.js · PostgreSQL · Prisma</div>
+            </div>
+            <div class="system-desc">Delivered HRMS backend modules for employee operations, payroll-aligned processing, and secure document lifecycle management.</div>
+          </div>
+          <div class="system-item">
+            <div class="system-head">
+              <div class="system-name">Walmart Reverse Engineering Workflow</div>
+              <div class="system-stack">API Analysis · Cookie Auth Automation</div>
+            </div>
+            <div class="system-desc">Developed automation flows by analyzing API behavior and implementing secure cookie-based session handling for repeated account workflows.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <div class="about-block-label">// What I'm Looking For</div>
+        <p>I am targeting backend engineering roles where ownership includes API architecture, data-model decisions, reliability hardening, and production operations in Node.js/TypeScript systems.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-card-label">// Engineer Profile</div>
+        <div class="profile-rows">
+          <div class="pr-row">
+            <span class="pr-key">Role</span>
+            <span class="pr-val">Senior Backend Developer</span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Experience</span>
+            <span class="pr-val">2.5+ years · Production Backend Delivery</span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Core Stack</span>
+            <span class="pr-val"><span class="chip-sm">Node.js</span><span class="chip-sm">TypeScript</span><span class="chip-sm">Express.js</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">API Layer</span>
+            <span class="pr-val"><span class="chip-sm">REST</span><span class="chip-sm">GraphQL</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Data Layer</span>
+            <span class="pr-val"><span class="chip-sm">PostgreSQL</span><span class="chip-sm">MongoDB</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">ORM / ODM</span>
+            <span class="pr-val"><span class="chip-sm">Prisma</span><span class="chip-sm">Sequelize</span><span class="chip-sm">Mongoose</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Security</span>
+            <span class="pr-val"><span class="chip-sm">JWT</span><span class="chip-sm">RBAC</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Infra</span>
+            <span class="pr-val"><span class="chip-sm">Docker</span><span class="chip-sm">AWS</span><span class="chip-sm">PM2</span></span>
+          </div>
+          <div class="pr-row">
+            <span class="pr-key">Domains</span>
+            <span class="pr-val">AI Platforms · SaaS · HRMS</span>
+          </div>
+          <div class="pr-row" style="border-bottom:none;">
+            <span class="pr-key">Notice</span>
+            <span class="pr-val" style="color:var(--green);">15 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ BACKEND CAPABILITIES ═══ -->
+<section id="skills" class="section">
+<div class="wrap">
+  <div class="sec-label">02 — Backend Architecture Stack</div>
+  <h2 class="sec-title rv">Operational Backend Capabilities</h2>
+  <p class="arch-philosophy rv d1">I design production backends as layered responsibilities: stable runtime, explicit API contracts, disciplined data models, controlled infrastructure, and observable operations.</p>
+
+  <div class="backend-stack rv d2" id="backend-stack">
+    <div class="stack-head">
+      <span class="stack-head-label">Live Backend Architecture Stack</span>
+      <div class="stack-head-meta">
+        <span>runtime</span>
+        <span>api</span>
+        <span>data</span>
+        <span>infra</span>
+        <span>jobs</span>
+        <span>observability</span>
+      </div>
+    </div>
+
+    <div class="stack-layers">
+      <article class="arch-layer runtime-layer" data-layer="L01">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Runtime Layer</div>
+            <div class="layer-role">Service Execution</div>
+          </div>
+          <div class="layer-body">
+            <p>Build backend services in Node.js and TypeScript with Express.js module boundaries that keep behavior explicit and deployable.</p>
+            <ul class="layer-caps">
+              <li class="core">Node.js</li>
+              <li class="core">TypeScript</li>
+              <li class="core">Express.js</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+
+      <article class="arch-layer api-layer" data-layer="L02">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">API Layer</div>
+            <div class="layer-role">Contracts & Access</div>
+          </div>
+          <div class="layer-body">
+            <p>Deliver REST and GraphQL interfaces with deterministic contracts, controlled authorization flow, and role-scoped endpoint behavior.</p>
+            <ul class="layer-caps">
+              <li class="core">REST APIs</li>
+              <li class="core">GraphQL APIs</li>
+              <li class="core">JWT</li>
+              <li class="core">RBAC</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+
+      <article class="arch-layer data-layer" data-layer="L03" tabindex="0">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Data Layer</div>
+            <div class="layer-role">Modeling & Query Discipline</div>
+          </div>
+          <div class="layer-body">
+            <p>Design relational and document schemas, then tune indexes and query paths using ORM control and production query diagnostics.</p>
+            <ul class="layer-caps">
+              <li class="core">PostgreSQL</li>
+              <li class="core">MongoDB</li>
+              <li>MySQL</li>
+              <li class="core">Prisma ORM</li>
+              <li>Sequelize</li>
+              <li>Mongoose</li>
+              <li class="core">Performance Tuning</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+
+      <article class="arch-layer infra-layer" data-layer="L04">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Infrastructure Layer</div>
+            <div class="layer-role">Deployment & Runtime Control</div>
+          </div>
+          <div class="layer-body">
+            <p>Run containerized services with process supervision, object storage integration, and environment management across cloud runtime targets.</p>
+            <ul class="layer-caps">
+              <li class="core">Docker</li>
+              <li class="core">AWS EC2</li>
+              <li class="core">AWS S3</li>
+              <li class="core">PM2</li>
+              <li class="core">Fly.io</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+
+      <article class="arch-layer background-layer" data-layer="L05">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Background Execution Layer</div>
+            <div class="layer-role">Async Workloads</div>
+          </div>
+          <div class="layer-body">
+            <p>Schedule recurring tasks and execute asynchronous workers for workloads that should not block request lifecycle performance.</p>
+            <ul class="layer-caps">
+              <li class="core">Cron Jobs</li>
+              <li class="core">Background Workers</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+
+      <article class="arch-layer observability-layer" data-layer="L06">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Observability Layer</div>
+            <div class="layer-role">Production Diagnostics</div>
+          </div>
+          <div class="layer-body">
+            <p>Operate with production monitoring and observability signals so runtime failures can be traced and resolved without guesswork.</p>
+            <ul class="layer-caps">
+              <li class="core">Production Monitoring</li>
+              <li class="core">Observability</li>
+            </ul>
+          </div>
+        </div>
+        <div class="layer-activity" aria-hidden="true"></div>
+      </article>
+    </div>
+
+    <div class="advanced-toggle-row">
+      <button id="advanced-toggle" class="advanced-toggle" type="button" aria-expanded="false" aria-controls="advanced-layer-wrap">Activate Advanced Backend Layer</button>
+    </div>
+    <div class="advanced-layer-wrap" id="advanced-layer-wrap">
+      <article class="arch-layer advanced-layer" data-layer="L07">
+        <div class="layer-grid">
+          <div>
+            <div class="layer-name">Advanced Backend Layer</div>
+            <div class="layer-role">Specialized System Work</div>
+          </div>
+          <div class="layer-body">
+            <p>Handle non-standard backend problems involving protocol analysis, geo-based matching logic, and AI API integration inside production workflows.</p>
+            <ul class="layer-caps">
+              <li class="core">API Reverse Engineering</li>
+              <li class="core">Haversine Geo-Matching</li>
+              <li class="core">Anthropic API Integration</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <p class="operating-principle rv d3"><span class="op-key">Operating Principle</span><strong>Design for correctness first, then scale by evidence:</strong> contracts stay stable, data remains consistent, and every running service is observable in production; frontend support stays secondary with Svelte/SvelteKit when required.</p>
+</div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects" class="section">
+<div class="wrap">
+  <div class="sec-label">03 — Projects</div>
+  <h2 class="sec-title">Production Deployments</h2>
+  <p class="deploy-intro">Each deployment is documented as a production backend case study: problem, system design, engineering decisions, and delivery outcome.</p>
+
+  <div class="deploy-timeline" id="deploy-timeline">
+    <article class="deploy-node">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-001</span>
+            <span class="deploy-stack">Node.js · TypeScript · GraphQL · Prisma · PostgreSQL</span>
+          </div>
+          <h3 class="deploy-title">Cordia — Location-Based Dating App</h3>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · Nov 2025</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false" aria-controls="blueprint-cordia">Open Blueprint</button>
+      <div class="deploy-blueprint" id="blueprint-cordia">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">User discovery required accurate, real-time geo-matching. Traditional SQL distance logic degraded under concurrent traffic and produced inconsistent matches due to Earth-curvature approximations.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">System Design</div>
+            <div class="bp-val">Designed a schema-first GraphQL API backed by Prisma ORM. Geo-distance logic was embedded at resolver level using the <strong>Haversine formula</strong> for Earth-accurate matching across regions.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Engineering Decisions</div>
+            <div class="bp-val">Organized resolvers by domain boundaries (<strong>auth, discovery, matching</strong>) to isolate business logic and maintain scalability. Kept geospatial filtering inside query path instead of post-processing.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Outcome</div>
+            <div class="bp-val">Shipped full lifecycle <strong>onboarding → discovery → filters → matching</strong>. Secured GraphQL endpoints with JWT + role-based access, optimized PostgreSQL indexing/query paths, and achieved sub-50ms discovery responses under load.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Capabilities</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span><span class="bp-cap core">TypeScript</span><span class="bp-cap core">GraphQL</span>
+                <span class="bp-cap core">Prisma ORM</span><span class="bp-cap core">PostgreSQL</span><span class="bp-cap core">JWT</span>
+                <span class="bp-cap core">Geo-Matching (Haversine)</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Production Case Study</span>
+            <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">Reference · GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="deploy-node">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-002</span>
+            <span class="deploy-stack">Node.js · TypeScript · Express.js · Docker · Fly.io · Anthropic APIs</span>
+          </div>
+          <h3 class="deploy-title">Panda Stack AI — MicroVM Platform</h3>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · Jan–Sep 2024</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false" aria-controls="blueprint-panda">Open Blueprint</button>
+      <div class="deploy-blueprint" id="blueprint-panda">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">Development teams required isolated, on-demand environments. Manual microVM provisioning introduced delays, operational errors, and poor developer experience.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">System Design</div>
+            <div class="bp-val">Built REST APIs in Node.js + TypeScript (Express.js) to orchestrate Fly.io microVM lifecycle. Docker images and shell scripts automated bootstrapping, with Anthropic APIs used for AI-assisted configuration workflows.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Engineering Decisions</div>
+            <div class="bp-val">Standardized the lifecycle as a single automation pipeline: <strong>spawn → configure → monitor → teardown</strong>. Added internal ticketing integration to preserve provisioning traceability and audit history.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Outcome</div>
+            <div class="bp-val">Reduced environment setup time from minutes to seconds, delivered fully automated microVM lifecycle management, and improved configuration accuracy through AI-assisted provisioning.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Capabilities</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span><span class="bp-cap core">TypeScript</span><span class="bp-cap core">Express.js</span>
+                <span class="bp-cap core">Docker</span><span class="bp-cap core">Fly.io</span><span class="bp-cap core">Anthropic AI APIs</span>
+                <span class="bp-cap core">REST APIs</span><span class="bp-cap">Shell Scripting</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Production Case Study</span>
+            <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">Reference · GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="deploy-node">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-003</span>
+            <span class="deploy-stack">Node.js · Express.js · PostgreSQL · Prisma · AWS S3</span>
+          </div>
+          <h3 class="deploy-title">proWork HRMS — Enterprise HR Platform</h3>
+        </div>
+        <div class="deploy-status live"><span class="ds-dot"></span>LIVE · Nov 2023</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false" aria-controls="blueprint-prowork">Open Blueprint</button>
+      <div class="deploy-blueprint" id="blueprint-prowork">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">HR operations for jobs, salaries, and documents were fragmented across tools, producing <strong>data inconsistency and payroll calculation errors</strong>.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">System Design</div>
+            <div class="bp-val">Designed modular backend domains for payroll, job management, and documents using Express.js. Prisma ORM enforced strict relational schemas on PostgreSQL. AWS S3 handled document storage via signed URLs with role-based access control.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Engineering Decisions</div>
+            <div class="bp-val">Separated salary-critical and document workflows at module level to reduce coupling, and enforced JWT authentication with RBAC boundaries for secure, auditable operations.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Outcome</div>
+            <div class="bp-val">Delivered unified HR data across enterprise clients, eliminated salary discrepancies through a deterministic salary engine, and established secure auditable document workflows.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Capabilities</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span><span class="bp-cap core">Express.js</span><span class="bp-cap core">PostgreSQL</span>
+                <span class="bp-cap core">Prisma ORM</span><span class="bp-cap core">AWS S3</span><span class="bp-cap core">JWT</span>
+                <span class="bp-cap core">RBAC</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Production Case Study</span>
+            <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">Reference · GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="deploy-node">
+      <div class="deploy-head">
+        <div>
+          <div class="deploy-meta">
+            <span class="deploy-id">SYS-004</span>
+            <span class="deploy-stack">Node.js · JavaScript · HTTP Automation</span>
+          </div>
+          <h3 class="deploy-title">Walmart Reverse-Engineering Automation</h3>
+        </div>
+        <div class="deploy-status internal"><span class="ds-dot"></span>INTERNAL · 2022</div>
+      </div>
+      <button class="deploy-toggle" type="button" aria-expanded="false" aria-controls="blueprint-walmart">Open Blueprint</button>
+      <div class="deploy-blueprint" id="blueprint-walmart">
+        <div class="deploy-blueprint-inner">
+          <div class="bp-row">
+            <div class="bp-key">Problem</div>
+            <div class="bp-val">Manual credit-card addition on Walmart accounts was repetitive and time-intensive during account setup processes.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">System Design</div>
+            <div class="bp-val">Reverse-engineered internal API flows using Burp Suite traffic analysis to understand authentication and request sequencing. Built a Node.js automation script to orchestrate required HTTP calls using cookie-based session authentication.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Engineering Decisions</div>
+            <div class="bp-val">Converted observed API sequence patterns into deterministic automation steps and preserved secure cookie context for repeatable session reuse.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Outcome</div>
+            <div class="bp-val">Delivered fully automated card-addition workflow with significant manual time reduction and reliable repeat execution for account configuration tasks.</div>
+          </div>
+          <div class="bp-row">
+            <div class="bp-key">Capabilities</div>
+            <div class="bp-val">
+              <div class="bp-cap-list">
+                <span class="bp-cap core">Node.js</span><span class="bp-cap core">JavaScript</span><span class="bp-cap core">API Reverse Engineering</span>
+                <span class="bp-cap core">Cookie-Based Auth</span><span class="bp-cap">Burp Suite</span><span class="bp-cap">HTTP Workflows</span>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-linkline">
+            <span class="note">Internal Engineering Workflow</span>
+            <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank">Reference · GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience" class="section">
+<div class="wrap">
+  <div class="sec-label">04 — Experience</div>
+  <h2 class="sec-title rv">Production History</h2>
+
+  <div class="exp-wrap">
+    <div class="exp-sidebar rv">
+      <div class="exp-company-card">
+        <div class="exp-company">Prolance IT</div>
+        <div class="exp-title-role">Software Developer (Backend Focus)</div>
+        <div class="exp-duration">
+          <div class="exp-dur-row">
+            <span class="exp-dur-key">Since</span>
+            <span class="exp-dur-val">Sep 2023</span>
+          </div>
+          <div class="exp-dur-row">
+            <span class="exp-dur-key">Status</span>
+            <span class="exp-dur-val green">Current · 2.5 yrs</span>
+          </div>
+          <div class="exp-dur-row">
+            <span class="exp-dur-key">Location</span>
+            <span class="exp-dur-val">Surat, GJ</span>
+          </div>
+          <div class="exp-dur-row">
+            <span class="exp-dur-key">Type</span>
+            <span class="exp-dur-val">Full-time</span>
+          </div>
+          <div class="exp-dur-row">
+            <span class="exp-dur-key">Notice</span>
+            <span class="exp-dur-val gold">15 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-main rv d1">
+      <div class="exp-row">
+        <div class="exp-key">Domain</div>
+        <div class="exp-val">Backend-focused engineering across <strong>AI Platforms, HRMS Systems, SaaS Products</strong>, and location-based mobile applications.</div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-key">Built</div>
+        <div class="exp-val">
+          <span class="etag">Cordia GraphQL API</span>
+          <span class="etag">Panda Stack AI</span>
+          <span class="etag">proWork HRMS</span>
+          <span class="etag">Walmart Reverse Engineering</span>
+          — production-grade backend systems and automation workflows.
+        </div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-key">Scaled</div>
+        <div class="exp-val">Optimized <strong>PostgreSQL and MongoDB</strong> query performance for high-concurrency API endpoints. Managed database schema migrations without downtime.</div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-key">Secured</div>
+        <div class="exp-val">Implemented <strong>JWT-based authentication, RBAC</strong>, and OAuth2 across multiple products. Zero unauthorized access incidents post-deployment.</div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-key">Shipped AI</div>
+        <div class="exp-val">Integrated <strong>Anthropic AI SDK</strong> into a live developer infrastructure platform — enabling AI-powered environment provisioning at Panda Stack.</div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-key">Deployed</div>
+        <div class="exp-val"><strong>Docker</strong> containers on <strong>AWS EC2</strong>, file storage via <strong>AWS S3</strong>, process management with <strong>PM2</strong>, and Fly.io for microVM workloads.</div>
+      </div>
+      <div class="exp-row" style="border-bottom:none;">
+        <div class="exp-key">Stack</div>
+        <div class="exp-val">Node.js · TypeScript · Express.js · GraphQL · Prisma · PostgreSQL · MongoDB · Docker · AWS · Fly.io</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<div class="contact-section">
+<div class="wrap">
+  <div class="contact-grid">
+    <div class="rv">
+      <div class="sec-label">05 — Contact</div>
+      <h2 class="contact-hl">
+        Let's build<br>something<br><span class="italic-gold">reliable.</span>
+      </h2>
+      <p class="contact-copy">Open to Backend and Full-Stack roles in Pune, Mumbai, Bangalore, or Remote. If your system needs Node.js, clean PostgreSQL schemas, and APIs that don't fail — reach out.</p>
+
+      <div class="api-pill">
+        <span class="method">POST</span>
+        <span class="route">/api/v1/hire/rohit-nale</span>
+        <span class="http">HTTP/1.1</span>
+      </div>
+
+      <a href="mailto:rohitnale0000@gmail.com" class="btn-gold">Send Offer →</a>
+    </div>
+
+    <div class="contact-links rv d2">
+      <a href="mailto:rohitnale0000@gmail.com" class="clink">
+        <span class="clink-type">Email</span>
+        <span class="clink-val">rohitnale0000@gmail.com</span>
+        <span class="clink-arr">→</span>
+      </a>
+      <a href="tel:+919623933599" class="clink">
+        <span class="clink-type">Phone</span>
+        <span class="clink-val">+91 96239 33599</span>
+        <span class="clink-arr">→</span>
+      </a>
+      <a href="https://linkedin.com/in/rohit-nale-820762149" target="_blank" class="clink">
+        <span class="clink-type">LinkedIn</span>
+        <span class="clink-val">rohit-nale-820762149</span>
+        <span class="clink-arr">↗</span>
+      </a>
+      <a href="https://github.com/Rohitnale000/Rohitnale000" target="_blank" class="clink">
+        <span class="clink-type">GitHub</span>
+        <span class="clink-val">Rohitnale000/Rohitnale000</span>
+        <span class="clink-arr">↗</span>
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="foot-l">ROHIT NALE · NODE.JS BACKEND ENGINEER · PUNE, IN · MCA SINHGAD '22</div>
+  <div class="foot-r">
+    <div class="live-dot"></div>
+    AVAILABLE · 15-DAY NOTICE
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// Advanced layer reveal
+const backendStack = document.getElementById('backend-stack');
+const advancedToggle = document.getElementById('advanced-toggle');
+if (backendStack && advancedToggle) {
+  advancedToggle.addEventListener('click', () => {
+    const isOpen = backendStack.classList.toggle('advanced-open');
+    advancedToggle.setAttribute('aria-expanded', String(isOpen));
+    advancedToggle.textContent = isOpen ? 'Collapse Advanced Backend Layer' : 'Activate Advanced Backend Layer';
+  });
+}
+
+// Deployment blueprint expand/collapse
+const deployNodes = document.querySelectorAll('.deploy-node');
+deployNodes.forEach(node => {
+  const toggle = node.querySelector('.deploy-toggle');
+  if (!toggle) return;
+  toggle.addEventListener('click', () => {
+    const shouldOpen = !node.classList.contains('open');
+    deployNodes.forEach(other => {
+      if (other === node) return;
+      other.classList.remove('open');
+      const otherToggle = other.querySelector('.deploy-toggle');
+      if (otherToggle) {
+        otherToggle.setAttribute('aria-expanded', 'false');
+        otherToggle.textContent = 'Open Blueprint';
+      }
+    });
+    node.classList.toggle('open', shouldOpen);
+    toggle.setAttribute('aria-expanded', String(shouldOpen));
+    toggle.textContent = shouldOpen ? 'Collapse Blueprint' : 'Open Blueprint';
+  });
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// Reduced motion
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('.rv').forEach(el => { el.style.opacity=1; el.style.transform='none'; el.classList.add('on'); });
+}
+</script>
+
+</body>
+</html>
